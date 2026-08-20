@@ -47,8 +47,23 @@ export const auth = betterAuth({
   basePath: "/api/auth",
   secret: environment.BETTER_AUTH_SECRET,
 
-  // Passing the client is what enables transactions in the adapter.
-  database: mongodbAdapter(getDb(), { client: getMongoClient() }),
+  /*
+   * `transaction: false` is not an oversight. Passing a client turns the
+   * adapter's transaction wrapper on by default, and in 1.7.1 that wrapper
+   * calls `abortTransaction` after `commitTransaction` on the sign-up path,
+   * which fails every registration with a 500. The end-to-end suite caught it
+   * immediately.
+   *
+   * Turning it off costs little here: the writes involved are a handful of
+   * single documents, and the ledger — the part of this system where atomicity
+   * genuinely matters — runs its own transactions through `appendEvent` using
+   * the same client, entirely unaffected by this setting. Revisit when the
+   * adapter is fixed upstream.
+   */
+  database: mongodbAdapter(getDb(), {
+    client: getMongoClient(),
+    transaction: false,
+  }),
 
   socialProviders: socialProviders(),
 

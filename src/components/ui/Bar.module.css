@@ -1,0 +1,29 @@
+.bar {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.gapBar {
+  width: 100%;
+  min-width: 6rem;
+  height: 10px;
+  border-radius: 1px;
+}
+
+.track {
+  fill: var(--surface-sunk);
+}
+
+.fillBelief {
+  fill: var(--belief);
+}
+
+.fillReality {
+  fill: var(--reality);
+}
+
+.centre {
+  fill: var(--rule-strong);
+}

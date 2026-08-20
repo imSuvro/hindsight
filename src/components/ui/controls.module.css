@@ -1,0 +1,332 @@
+/* Shared control styles. Imported by several components on purpose: a form
+   field should look identical wherever it appears. */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0.6rem var(--space-5);
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-size: var(--text-sm);
+  font-weight: 550;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary {
+  composes: button;
+  background: var(--ink);
+  color: var(--ink-inverse);
+  border-color: var(--ink);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--reality);
+  border-color: var(--reality);
+}
+
+.secondary {
+  composes: button;
+  border-color: var(--rule-strong);
+  color: var(--ink);
+}
+
+.secondary:hover:not(:disabled) {
+  border-color: var(--ink-soft);
+  background: var(--surface-hover);
+}
+
+.quiet {
+  composes: button;
+  padding-inline: var(--space-3);
+  color: var(--ink-soft);
+}
+
+.quiet:hover:not(:disabled) {
+  color: var(--ink);
+  background: var(--surface-hover);
+}
+
+.destructive {
+  composes: button;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.destructive:hover:not(:disabled) {
+  background: var(--danger);
+  color: var(--ink-inverse);
+}
+
+/* ----------------------------------------------------------------- fields */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: 38rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.hint {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+  line-height: var(--leading-normal);
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: 0.55rem var(--space-3);
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  font-size: var(--text-base);
+  transition: border-color 120ms ease;
+}
+
+.input:hover,
+.textarea:hover,
+.select:hover {
+  border-color: var(--ink-faint);
+}
+
+.textarea {
+  min-height: 6rem;
+  resize: vertical;
+  line-height: var(--leading-normal);
+}
+
+.select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentcolor 50%),
+    linear-gradient(135deg, currentcolor 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% + 2px),
+    calc(100% - 13px) calc(50% + 2px);
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: var(--space-7);
+}
+
+.error {
+  font-size: var(--text-xs);
+  color: var(--danger);
+  font-weight: 550;
+}
+
+.formError {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  background: var(--danger-wash);
+  color: var(--ink);
+  font-size: var(--text-sm);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-4);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+/* -------------------------------------------------------------- confidence */
+
+.confidenceField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.confidenceHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.confidenceValue {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-2xl);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--belief);
+}
+
+.slider {
+  width: 100%;
+  accent-color: var(--belief);
+  height: 1.5rem;
+}
+
+.anchors {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-2xs);
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+
+.reading {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  line-height: var(--leading-normal);
+  min-height: 2.6em;
+}
+
+/* ------------------------------------------------------------ confirmation */
+
+.confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--surface-sunk);
+}
+
+.confirmTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 500;
+}
+
+.confirmList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  list-style: none;
+}
+
+.confirmRow {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  align-items: baseline;
+}
+
+.confirmLabel {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.confirmValue {
+  line-height: var(--leading-normal);
+}
+
+.confirmNote {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  line-height: var(--leading-relaxed);
+  border-left: 2px solid var(--belief);
+  padding-left: var(--space-4);
+}
+
+/* ---------------------------------------------------------------- outcomes */
+
+.outcomeChoices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.outcomeChoice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+
+.outcomeChoice:hover {
+  border-color: var(--ink-faint);
+}
+
+.outcomeChoice:has(input:checked) {
+  border-color: var(--reality);
+  background: var(--reality-wash);
+}
+
+.outcomeChoice:has(input:focus-visible) {
+  outline: 2px solid var(--reality-bright);
+  outline-offset: 2px;
+}
+
+.outcomeRadio {
+  margin-top: 0.2em;
+  accent-color: var(--reality);
+  flex: none;
+}
+
+.outcomeText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.outcomeLabel {
+  font-weight: 550;
+  font-size: var(--text-sm);
+}
+
+.outcomeHint {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+  line-height: var(--leading-normal);
+}
+
+@media (max-width: 34rem) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .confirmRow {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+}

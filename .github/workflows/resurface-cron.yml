@@ -1,0 +1,58 @@
+name: Resurface due decisions
+
+# Vercel's Hobby cron runs once a day with up to an hour of slop, which cannot
+# express "hourly". GitHub's scheduler is free on public repositories and
+# accurate enough, given that the endpoint is catch-up capable and idempotent —
+# a late or skipped run delays a notification, it cannot lose one. See
+# docs/adr/0004-scheduled-jobs.md.
+on:
+  schedule:
+    # Seven past, because the top of the hour is the most congested slot on
+    # GitHub's scheduler and this job has no reason to compete for it.
+    - cron: "7 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: resurface
+  cancel-in-progress: false
+
+jobs:
+  resurface:
+    name: resurface
+    runs-on: ubuntu-latest
+    # Stays inert until the production deployment is ready for it. Scheduled
+    # workflows only run from the default branch, so the file has to live on
+    # main well before the release that switches this on.
+    if: vars.CRON_ENABLED == 'true'
+    steps:
+      - name: Ask the app what is due
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${APP_URL}" ]; then
+            echo "APP_URL repository variable is not set." >&2
+            exit 1
+          fi
+
+          response=$(mktemp)
+          status=$(curl --silent --show-error --location \
+            --max-time 180 \
+            --retry 2 --retry-delay 20 --retry-connrefused \
+            --output "$response" --write-out '%{http_code}' \
+            --request POST "${APP_URL}/api/jobs/resurface" \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            --header "Content-Length: 0")
+
+          echo "HTTP ${status}"
+          cat "$response"
+          echo
+
+          if [ "$status" != "200" ]; then
+            echo "The resurface job did not succeed." >&2
+            exit 1
+          fi

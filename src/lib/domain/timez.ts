@@ -19,6 +19,14 @@ import type { ReviewLocal } from "@/lib/schemas/domain";
 
 export const DEFAULT_REVIEW_TIME = "09:00";
 
+/**
+ * Used until a browser has told us where the user is. Onboarding asks them to
+ * confirm rather than leaving them silently on this, because a reminder that
+ * lands on the wrong day is exactly the sort of small failure that stops people
+ * trusting a tool.
+ */
+export const FALLBACK_TIME_ZONE = "UTC";
+
 export function isValidTimeZone(timeZone: string): boolean {
   try {
     new Intl.DateTimeFormat("en-US", { timeZone });

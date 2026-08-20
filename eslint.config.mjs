@@ -29,7 +29,9 @@ export default defineConfig([
     // is a merge gate here, not a later pass.
     files: ["src/**/*.tsx"],
     rules: {
-      "jsx-a11y/label-has-associated-control": "error",
+      // Depth 4 because several labels wrap the control alongside a title and
+      // a hint in nested spans, which is the shape the design calls for.
+      "jsx-a11y/label-has-associated-control": ["error", { depth: 4 }],
       "jsx-a11y/no-autofocus": "error",
       "jsx-a11y/click-events-have-key-events": "error",
       "jsx-a11y/no-static-element-interactions": "error",

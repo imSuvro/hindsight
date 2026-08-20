@@ -61,6 +61,21 @@ the arithmetic is covered by property tests.
 - Seven architecture decision records, a written calibration methodology, a
   verification guide and a deployment runbook.
 
+### Security notes
+
+Four hardening items found during the build, none of them user-facing bugs but
+all worth recording:
+
+- The post-sign-in redirect is validated by allowlist rather than blocklist. The
+  earlier version rejected `//evil.com` but allowed `/\evil.com`, which several
+  browsers read as protocol-relative.
+- Server-action modules export writes only. A read helper left in one was
+  reachable as an endpoint despite being unreferenced.
+- `X-Powered-By` is off; there is no reason to announce the framework and
+  version to an automated scan.
+- Better Auth's Mongo adapter transactions are disabled, because in 1.7.1 the
+  wrapper aborts an already-committed transaction and fails every sign-up.
+
 ### Known limitations
 
 Listed in full in the [README](README.md#known-limitations). The ones worth

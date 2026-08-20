@@ -1,0 +1,287 @@
+/*
+ * Hindsight design tokens.
+ *
+ * The product takes a reading of your judgement, so it is built to look like an
+ * instrument rather than an app: porcelain-cool surfaces, hairline rules that
+ * mark real structural boundaries, and numbers set in a face that keeps its
+ * columns.
+ *
+ * Two accent colours carry meaning and are never used decoratively:
+ *
+ *   --belief   (warm brass)  what you said would happen
+ *   --reality  (cool teal)   what actually happened
+ *
+ * On the reliability diagram they converge on the diagonal when you are well
+ * calibrated, and the distance between them is the finding. Every place they
+ * appear, they mean the same two things.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --ground: #f2f4f3;
+  --surface: #fbfcfb;
+  --surface-sunk: #eaeeec;
+  --surface-hover: #f5f7f6;
+
+  /* Ink */
+  --ink: #12181b;
+  --ink-soft: #55636b;
+  --ink-faint: #86939a;
+  --ink-inverse: #fbfcfb;
+
+  /* Structure */
+  --rule: #d9dfdd;
+  --rule-strong: #c2cbc8;
+
+  /* Meaning */
+  --belief: #a5661f;
+  --belief-bright: #c8873c;
+  --belief-wash: #f5e9da;
+  --reality: #14646f;
+  --reality-bright: #2b8b98;
+  --reality-wash: #dceced;
+  --reference: #8d9aa1;
+  --danger: #8f3626;
+  --danger-wash: #f6e3df;
+
+  /* Type */
+  --font-display: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --font-body:
+    var(--font-archivo), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-spline-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.875rem;
+  --text-2xl: 2.5rem;
+  --text-3xl: 3.25rem;
+
+  --leading-tight: 1.12;
+  --leading-snug: 1.32;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+
+  /* Rhythm */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* Instruments have small radii and tight shadows. */
+  --radius: 3px;
+  --radius-lg: 5px;
+  --shadow-raised: 0 1px 2px rgb(18 24 27 / 6%), 0 4px 16px rgb(18 24 27 / 4%);
+  --shadow-lifted: 0 2px 4px rgb(18 24 27 / 8%), 0 12px 32px rgb(18 24 27 / 8%);
+
+  --measure: 34rem;
+  --page-max: 68rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --ground: #0e1416;
+    --surface: #161e21;
+    --surface-sunk: #0a0f11;
+    --surface-hover: #1c2528;
+
+    --ink: #e7edec;
+    --ink-soft: #9dabb0;
+    --ink-faint: #6c7b81;
+    --ink-inverse: #0e1416;
+
+    --rule: #253135;
+    --rule-strong: #35454a;
+
+    --belief: #e0a758;
+    --belief-bright: #f0bd75;
+    --belief-wash: #2b2116;
+    --reality: #4eaab8;
+    --reality-bright: #71c4d0;
+    --reality-wash: #10282c;
+    --reference: #55666d;
+    --danger: #d4705e;
+    --danger-wash: #2e1a16;
+
+    --shadow-raised: 0 1px 2px rgb(0 0 0 / 40%), 0 4px 16px rgb(0 0 0 / 24%);
+    --shadow-lifted: 0 2px 4px rgb(0 0 0 / 48%), 0 12px 32px rgb(0 0 0 / 36%);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100%;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 480;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--text-2xl);
+}
+h2 {
+  font-size: var(--text-xl);
+}
+h3 {
+  font-size: var(--text-lg);
+}
+
+h4,
+h5,
+h6 {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  text-decoration-color: currentcolor;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+svg {
+  display: block;
+}
+
+/*
+ * A focus ring you can actually see, on every surface, without the browser
+ * default's habit of vanishing against dark backgrounds.
+ */
+:focus-visible {
+  outline: 2px solid var(--reality-bright);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+::selection {
+  background: var(--reality-wash);
+  color: var(--ink);
+}
+
+/* Numbers are the product. They get tabular figures wherever they appear. */
+.numeric {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.02em;
+}
+
+/* Small capitalised labels that name a field or a section. */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keyboard users get to the content without tabbing the whole header. */
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: var(--space-4);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lifted);
+  transform: translateY(calc(-100% - var(--space-5)));
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

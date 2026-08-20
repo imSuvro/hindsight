@@ -1,0 +1,60 @@
+name: Bug report
+description: Something behaves differently from how it is documented or intended.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please describe the shape of the problem rather than pasting the
+        contents of a decision. It is your journal, not ours.
+
+        Security issues do not belong here — see SECURITY.md for private
+        reporting.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, and what the app did instead of what you expected.
+      placeholder: |
+        1. Locked a decision with a review date of ...
+        2. On the review date ...
+        3. Expected ..., but ...
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Where
+      description: The page or action, e.g. "the dashboard" or "resolving a decision".
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part
+      options:
+        - Logging or locking a decision
+        - Reviewing and resolving
+        - Calibration figures or the diagram
+        - Review emails or timing
+        - Sign-in
+        - Export or record verification
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Browser and device
+      placeholder: "Firefox 141 on Android 15"
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Before submitting
+      options:
+        - label: This report contains no private decision content.
+          required: true
+        - label: This is not a security vulnerability (those go through SECURITY.md).
+          required: true

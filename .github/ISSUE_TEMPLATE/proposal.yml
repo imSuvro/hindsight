@@ -1,0 +1,45 @@
+name: Proposal
+description: Suggest a change to how Hindsight works.
+labels: ["proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Hindsight deliberately does less than it could. Sharing, streaks and
+        gamification were all considered and cut, for reasons in the README and
+        the ADRs — worth a look before proposing something in that family.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is the problem
+      description: >
+        Describe the situation you are in, not the feature you want. The most
+        useful proposals start from something that went wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would change
+    validations:
+      required: true
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: What it would cost
+      description: >
+        What gets harder, noisier or less honest if this ships. A proposal that
+        names its own downside is much easier to take seriously.
+    validations:
+      required: false
+  - type: checkboxes
+    id: invariants
+    attributes:
+      label: Does this hold the line
+      description: >
+        These are invariants rather than preferences. A proposal that breaks one
+        needs to argue for the break explicitly.
+      options:
+        - label: It does not make a locked prediction editable.
+        - label: It does not show a statistic that the sample size cannot support.
+        - label: It does not add AI, tracking, or a third-party script.

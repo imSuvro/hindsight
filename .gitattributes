@@ -1,0 +1,17 @@
+# Line endings are LF everywhere, including in Windows working copies.
+# Prettier is configured for LF and CI checks formatting on Linux, so letting
+# Git rewrite endings on checkout would make the same file fail the check it
+# just passed. The husky hooks are shell scripts and must be LF regardless.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
+
+pnpm-lock.yaml linguist-generated=true -diff

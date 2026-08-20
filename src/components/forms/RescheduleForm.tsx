@@ -48,9 +48,8 @@ export function RescheduleForm({
     return (
       <button
         type="button"
-        className={styles.quiet}
+        className={panel.openReschedule}
         onClick={() => setOpen(true)}
-        style={{ alignSelf: "flex-start", paddingInline: 0 }}
       >
         Not ready yet — move this review
       </button>
@@ -86,7 +85,7 @@ export function RescheduleForm({
         {errors.reviewDate && <p className={styles.error}>{errors.reviewDate}</p>}
       </div>
 
-      <div className={panel.presets} style={{ marginTop: 0 }}>
+      <div className={panel.presetsFlush}>
         {REVIEW_PRESETS.map((preset) => (
           <button
             key={preset.id}

@@ -150,42 +150,10 @@
 }
 
 /*
- * A single-hue bar, because the row label already carries identity — a
- * five-colour scheme here would add nothing a reader could not already see.
- * The gap bar diverges from a centre line, so direction is read from position.
+ * The per-domain gap is drawn by `DivergingBar`. No five-colour scheme here:
+ * the row label already carries identity, and direction is read from which side
+ * of the centre line the bar sits on rather than from its hue.
  */
-.gapTrack {
-  position: relative;
-  width: 100%;
-  min-width: 6rem;
-  height: 10px;
-  background: var(--surface-sunk);
-  border-radius: 1px;
-}
-
-.gapCentre {
-  position: absolute;
-  left: 50%;
-  top: -2px;
-  bottom: -2px;
-  width: 1px;
-  background: var(--rule-strong);
-}
-
-.gapFill {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  border-radius: 1px;
-}
-
-.gapFillOver {
-  background: var(--belief);
-}
-
-.gapFillUnder {
-  background: var(--reality);
-}
 
 /* ----------------------------------------------------------- locked state */
 
@@ -228,19 +196,4 @@
 .progressLabel {
   font-size: var(--text-sm);
   color: var(--ink-soft);
-}
-
-.progressTrack {
-  position: relative;
-  height: 4px;
-  background: var(--surface-sunk);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.progressFill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  background: var(--reality);
-  border-radius: 2px;
 }

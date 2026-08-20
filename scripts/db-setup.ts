@@ -16,33 +16,38 @@ import { setupDatabase } from "../src/lib/db/setup";
  * are short and numerous, and issuing `createIndex` on a request path would
  * repeat the same command thousands of times a day to no purpose.
  */
-config({ path: ".env.local", quiet: true });
-config({ quiet: true });
+async function main(): Promise<void> {
+  config({ path: ".env.local", quiet: true });
+  config({ quiet: true });
 
-const uri = process.env.MONGODB_URI;
-if (!uri) {
-  console.error(
-    "MONGODB_URI is not set. Put it in .env.local or pass it on the command line.",
-  );
-  process.exit(1);
-}
-
-const client = new MongoClient(uri);
-
-try {
-  await client.connect();
-  const db = client.db();
-  console.log(`Applying indexes and validators to "${db.databaseName}"…`);
-  await setupDatabase(db);
-
-  for (const name of ["ledger", "chain_heads", "decisions", "notifications"]) {
-    const indexes = await db.collection(name).indexes();
-    console.log(`  ${name}: ${indexes.map((index) => index.name).join(", ")}`);
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    console.error(
+      "MONGODB_URI is not set. Put it in .env.local or pass it on the command line.",
+    );
+    process.exit(1);
   }
-  console.log("Done.");
-} catch (error) {
-  console.error("Setup failed:", error);
-  process.exitCode = 1;
-} finally {
-  await client.close();
+
+  const client = new MongoClient(uri);
+  try {
+    await client.connect();
+    const db = client.db();
+    console.log(`Applying indexes and validators to "${db.databaseName}"…`);
+    await setupDatabase(db);
+
+    for (const name of ["ledger", "chain_heads", "decisions", "notifications"]) {
+      const indexes = await db.collection(name).indexes();
+      console.log(`  ${name}: ${indexes.map((index) => index.name).join(", ")}`);
+    }
+    console.log("Done.");
+  } finally {
+    await client.close();
+  }
 }
+
+// Wrapped rather than written with top-level await: this file is loaded as
+// CommonJS by tsx, which does not support it.
+main().catch((error: unknown) => {
+  console.error("Setup failed:", error);
+  process.exit(1);
+});

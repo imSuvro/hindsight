@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProportionBar } from "@/components/ui/Bar";
 import { formatDate, relativeDays } from "@/lib/format";
 import {
   DOMAIN_LABELS,
@@ -92,14 +93,10 @@ function DecisionBody({
 
       <div className={styles.figure}>
         <span className={styles.confidence}>{decision.confidence}%</span>
-        <span
-          className={styles.confidenceTrack}
-          role="img"
-          aria-label={`Stated confidence ${decision.confidence} percent`}
-        >
-          <span
-            className={styles.confidenceFill}
-            style={{ width: `${decision.confidence}%` }}
+        <span className={styles.confidenceTrack}>
+          <ProportionBar
+            value={decision.confidence / 100}
+            label={`Stated confidence ${decision.confidence} percent`}
           />
         </span>
         {resolution && (

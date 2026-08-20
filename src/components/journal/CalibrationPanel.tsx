@@ -1,4 +1,5 @@
 import { ReliabilityDiagram } from "@/components/charts/ReliabilityDiagram";
+import { DivergingBar, ProportionBar } from "@/components/ui/Bar";
 import type { CalibrationReport } from "@/lib/domain/calibration";
 import { DOMAIN_LABELS } from "@/lib/schemas/domain";
 import styles from "./CalibrationPanel.module.css";
@@ -97,7 +98,6 @@ function DomainBreakdown({ report }: { report: CalibrationReport }) {
         <tbody>
           {report.byDomain.map((domain) => {
             const gap = domain.gap;
-            const width = gap === null ? 0 : Math.min(Math.abs(gap) / 0.5, 1) * 50;
             return (
               <tr key={domain.domain}>
                 <th scope="row" className={styles.domainName}>
@@ -114,25 +114,15 @@ function DomainBreakdown({ report }: { report: CalibrationReport }) {
                       {Math.max(report.thresholds.domain - domain.scored, 0)} more to go
                     </span>
                   ) : (
-                    <div
-                      className={styles.gapTrack}
-                      role="img"
-                      aria-label={
+                    <DivergingBar
+                      value={gap}
+                      extent={0.5}
+                      label={
                         Math.abs(gap) < 0.02
                           ? "On the line"
                           : `${points(gap)} points ${gap > 0 ? "over" : "under"}confident`
                       }
-                    >
-                      <span className={styles.gapCentre} aria-hidden="true" />
-                      <span
-                        className={`${styles.gapFill} ${gap > 0 ? styles.gapFillOver : styles.gapFillUnder}`}
-                        style={
-                          gap > 0
-                            ? { left: "50%", width: `${width}%` }
-                            : { right: "50%", width: `${width}%` }
-                        }
-                      />
-                    </div>
+                    />
                   )}
                 </td>
               </tr>
@@ -158,16 +148,12 @@ function NotYet({ report }: { report: CalibrationReport }) {
         </span>
         <span className={styles.progressLabel}>resolved decisions</span>
       </div>
-      <div
-        className={styles.progressTrack}
-        role="img"
-        aria-label={`${scored} of ${target} resolved decisions needed`}
-      >
-        <span
-          className={styles.progressFill}
-          style={{ width: `${Math.min(scored / target, 1) * 100}%` }}
-        />
-      </div>
+      <ProportionBar
+        value={scored / target}
+        tone="reality"
+        height={4}
+        label={`${scored} of ${target} resolved decisions needed`}
+      />
       <p className={styles.lockedBody}>
         A calibration curve drawn from a handful of decisions is not a weak signal, it is
         an invented one.{" "}

@@ -1,14 +1,61 @@
+/*
+ * Wide enough and the reading sits beside the plot rather than under it: the
+ * plot is square by necessity, so stacking everything below it left half the
+ * width empty and made the chart look smaller than it is.
+ */
+/*
+ * Wide enough and the reading sits beside the plot rather than under it. The
+ * plot is square by necessity, so stacking everything below it left half the
+ * width empty and made the chart look smaller than it is.
+ *
+ * The caption is last in the markup because HTML requires `figcaption` to be
+ * the first or last child of a `figure`; grid puts it back at the top of the
+ * right-hand column, which is where it reads.
+ */
 .figure {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
+  display: grid;
+  grid-template-columns: minmax(0, 27rem) minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr;
+  align-items: start;
+  gap: var(--space-5) var(--space-6);
 }
 
 .plotFrame {
+  grid-column: 1;
+  grid-row: 1 / span 3;
   position: relative;
   width: 100%;
-  max-width: 30rem;
+}
+
+.annotation {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.legendList {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.tableToggle {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+@media (max-width: 60rem) {
+  .figure {
+    grid-template-columns: minmax(0, 30rem);
+    grid-template-rows: none;
+  }
+
+  .plotFrame,
+  .annotation,
+  .legendList,
+  .tableToggle {
+    grid-column: 1;
+    grid-row: auto;
+  }
 }
 
 .plot {
@@ -160,10 +207,10 @@
 
 /* ----------------------------------------------------------------- legend */
 
-.legend {
+.legendList {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-5);
+  flex-direction: column;
+  gap: var(--space-2);
   list-style: none;
   font-size: var(--text-xs);
   color: var(--ink-soft);
@@ -184,7 +231,7 @@
 /* -------------------------------------------------------------- annotation */
 
 .annotation {
-  max-width: 30rem;
+  max-width: 26rem;
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
   color: var(--ink-soft);

@@ -45,3 +45,5 @@ yarn-error.log*
 /tmp
 dev.log
 /.claude
+
+e2e.log

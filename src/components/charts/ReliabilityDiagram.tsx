@@ -37,6 +37,8 @@ const MIN_RADIUS = 5;
 const MAX_RADIUS = 13;
 /** Keeps the gap bracket clear of the interval that shares the point's x. */
 const GAP_OFFSET = 7;
+/** Half-width of the invisible hover and focus target around each point. */
+const HIT_HALF_WIDTH = 15;
 
 type Direction = "over" | "under" | "even";
 
@@ -192,6 +194,23 @@ export function ReliabilityDiagram({
                 role="img"
                 aria-label={describe(bin)}
               >
+                {/*
+                  A transparent target covering the point and its whole
+                  interval. Without it only the drawn pixels are hoverable, so
+                  the readout barely triggers — the hit area has to be bigger
+                  than the mark, not equal to it.
+                */}
+                <rect
+                  className={styles.hitArea}
+                  x={cx - HIT_HALF_WIDTH}
+                  y={Math.min(y(bin.interval.upper), cy - radius) - 4}
+                  width={HIT_HALF_WIDTH * 2}
+                  height={
+                    Math.max(y(bin.interval.lower), cy + radius) -
+                    Math.min(y(bin.interval.upper), cy - radius) +
+                    8
+                  }
+                />
                 {/*
                   The gap is offset to the left of the point and bracketed at
                   the diagonal end, so it reads as a measurement of the distance

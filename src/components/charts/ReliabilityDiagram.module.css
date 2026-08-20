@@ -171,6 +171,15 @@
   cursor: default;
 }
 
+/*
+ * Invisible, but must still receive the pointer — `fill: none` would let events
+ * fall straight through to the plot behind it.
+ */
+.hitArea {
+  fill: transparent;
+  pointer-events: all;
+}
+
 .mark:focus {
   outline: none;
 }

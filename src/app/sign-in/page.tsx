@@ -12,11 +12,32 @@ export const metadata: Metadata = {
   description: "Sign in to Hindsight with Google or GitHub.",
 };
 
-/** Only ever redirect within this app, never to a URL someone put in a query. */
+/**
+ * Only ever redirect within this app, never to a URL someone put in a query.
+ *
+ * An allowlist rather than a blocklist, because the blocklist version of this
+ * has a long history of being one character short. `//evil.com` is the obvious
+ * case; `/\evil.com` is the one that gets missed, since several browsers treat
+ * a backslash there as a second slash — and `%2f`, `%5c` and `%09` are the same
+ * trick with an encoding on top. Anything that is not a plain in-app path lands
+ * on the dashboard.
+ *
+ * Better Auth validates the callback again on its own side. This is not
+ * relying on that.
+ */
+const IN_APP_PATH = /^\/(?![/\\])[\w\-./]*(?:\?[\w\-./=&%]*)?$/;
+
 function safeNext(value: string | undefined): string {
   if (!value) return "/dashboard";
-  if (!value.startsWith("/") || value.startsWith("//")) return "/dashboard";
-  return value;
+  const decoded = (() => {
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return value;
+    }
+  })();
+  if (decoded !== value) return "/dashboard";
+  return IN_APP_PATH.test(value) ? value : "/dashboard";
 }
 
 export default async function SignInPage(props: PageProps<"/sign-in">) {

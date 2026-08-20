@@ -43,3 +43,7 @@ yarn-error.log*
 
 # local scratch
 /tmp
+dev.log
+/.claude
+
+e2e.log

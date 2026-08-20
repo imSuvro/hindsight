@@ -1,0 +1,35 @@
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.section > :global(ul),
+.section > :global(p) {
+  width: 100%;
+}
+
+.dueHead {
+  max-width: var(--measure);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 480;
+  letter-spacing: -0.012em;
+}
+
+.sectionNote {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  line-height: var(--leading-relaxed);
+}

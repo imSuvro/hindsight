@@ -41,6 +41,7 @@ const config = {
         "config",
         "test",
         "release",
+        "e2e",
         "",
       ],
     ],

@@ -91,3 +91,56 @@ jobs:
           BETTER_AUTH_URL: http://localhost:3000
           CRON_SECRET: build-time-placeholder-cron-secret
           EMAIL_MODE: log
+
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Cache mongod binary
+        uses: actions/cache@v4
+        with:
+          path: .cache/mongodb-binaries
+          key: mongod-${{ runner.os }}-${{ env.MONGOMS_VERSION }}
+
+      # Both Playwright projects are chromium-based, so only that browser is
+      # downloaded.
+      - name: Resolve Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      # The suite runs against a production build: the proxy, the strict CSP and
+      # the real server-action wiring only all apply there.
+      - name: Build
+        run: pnpm build
+        env:
+          MONGODB_URI: mongodb://127.0.0.1:27017/hindsight-build
+          BETTER_AUTH_SECRET: build-time-placeholder-secret-not-used-at-runtime
+          BETTER_AUTH_URL: http://localhost:3100
+          CRON_SECRET: build-time-placeholder-cron-secret
+          EMAIL_MODE: log
+
+      - name: End-to-end tests
+        run: pnpm test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

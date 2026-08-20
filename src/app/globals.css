@@ -28,21 +28,36 @@
   /* Ink */
   --ink: #12181b;
   --ink-soft: #55636b;
-  --ink-faint: #86939a;
+  /* 5.1:1 on --surface, 4.8:1 on --ground. Labels and captions are small text
+     and still have to clear WCAG AA; the lighter grey this replaced managed
+     only 2.9:1, which the accessibility scan caught. */
+  --ink-faint: #5f6e75;
   --ink-inverse: #fbfcfb;
 
   /* Structure */
   --rule: #d9dfdd;
   --rule-strong: #c2cbc8;
 
-  /* Meaning */
+  /*
+   * Meaning. These two are data colours and were chosen by running the
+   * palette validator rather than by eye: both clear the OKLCH chroma floor,
+   * separate by ΔE 18 under protanopia and 22 with normal vision, and hold
+   * 3:1 against the surface. Dark mode is stepped separately against the dark
+   * surface, not flipped.
+   */
   --belief: #a5661f;
   --belief-bright: #c8873c;
   --belief-wash: #f5e9da;
-  --reality: #14646f;
-  --reality-bright: #2b8b98;
-  --reality-wash: #dceced;
-  --reference: #8d9aa1;
+  /* Small text in the belief colour needs 4.5:1, which the data-mark value does
+     not reach on the wash. Marks and words are held to different bars, so they
+     get different tokens rather than one compromise between them. */
+  --belief-ink: #8a5417;
+  --reality: #0074a0;
+  --reality-bright: #2b90ba;
+  --reality-wash: #ddedf4;
+  /* Chart furniture, not a series: identified by its label, never by hue.
+     Held to the 3:1 bar for non-text graphics rather than the text bar. */
+  --reference: #79878e;
   --danger: #8f3626;
   --danger-wash: #f6e3df;
 
@@ -99,19 +114,21 @@
 
     --ink: #e7edec;
     --ink-soft: #9dabb0;
-    --ink-faint: #6c7b81;
+    /* 5.8:1 on --surface, 6.3:1 on --ground. */
+    --ink-faint: #8b999f;
     --ink-inverse: #0e1416;
 
     --rule: #253135;
     --rule-strong: #35454a;
 
-    --belief: #e0a758;
-    --belief-bright: #f0bd75;
+    --belief: #bd8438;
+    --belief-bright: #d69f56;
     --belief-wash: #2b2116;
-    --reality: #4eaab8;
-    --reality-bright: #71c4d0;
-    --reality-wash: #10282c;
-    --reference: #55666d;
+    --belief-ink: #cf9a52;
+    --reality: #2e97c4;
+    --reality-bright: #52aed6;
+    --reality-wash: #102630;
+    --reference: #5b6c73;
     --danger: #d4705e;
     --danger-wash: #2e1a16;
 

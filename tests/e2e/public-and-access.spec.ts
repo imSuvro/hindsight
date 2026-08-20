@@ -58,9 +58,34 @@ test.describe("the public pages", () => {
   });
 
   test("will not bounce a visitor to another site after sign-in", async ({ page }) => {
-    await page.goto("/sign-in?next=https://example.com/phish");
-    // The parameter is ignored rather than honoured; nothing on the page links out.
-    await expect(page.getByRole("link", { name: /example\.com/ })).toHaveCount(0);
+    // The classic open-redirect payloads, including the ones a blocklist misses:
+    // a backslash that several browsers read as a second slash, and the same
+    // trick with an encoding on top.
+    const payloads = [
+      "https://example.com/phish",
+      "//example.com/phish",
+      "/\\example.com/phish",
+      "%2F%2Fexample.com",
+      "/%09/example.com",
+      "https:/example.com",
+    ];
+
+    for (const payload of payloads) {
+      await page.goto(`/sign-in?next=${encodeURIComponent(payload)}`);
+
+      // The property that matters is that nothing on the page will navigate
+      // there. Grepping the raw HTML would be the wrong check: Next serialises
+      // the current URL into its own router state, so the payload appears in
+      // the flight payload of any page you load with it in the query — which
+      // is the address bar echoing itself, not a redirect.
+      await expect(
+        page.locator(
+          '[href*="example.com"], [action*="example.com"], [src*="example.com"]',
+        ),
+      ).toHaveCount(0);
+      await expect(page.locator('meta[http-equiv="refresh"]')).toHaveCount(0);
+      await expect(page).toHaveURL(/\/sign-in\?/);
+    }
   });
 
   test("serves a strict content security policy", async ({ page }) => {

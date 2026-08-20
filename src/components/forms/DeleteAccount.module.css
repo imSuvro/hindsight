@@ -1,0 +1,24 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 34rem;
+  padding: var(--space-5);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  background: var(--danger-wash);
+}
+
+.warning {
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+}
+
+.phrase {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  padding: 0.1em 0.4em;
+  border-radius: 2px;
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+}

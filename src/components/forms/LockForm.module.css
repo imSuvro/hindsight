@@ -1,0 +1,66 @@
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: calc(var(--space-4) * -1);
+}
+
+.preset {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+  transition:
+    border-color 120ms ease,
+    color 120ms ease;
+}
+
+.preset:hover {
+  border-color: var(--reality);
+  color: var(--ink);
+}
+
+/* ------------------------------------------------------------ sealed state */
+
+.sealed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 38rem;
+  padding: var(--space-6);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.sealedTag {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--reality);
+}
+
+.sealedTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.sealedBody {
+  color: var(--ink-soft);
+  line-height: var(--leading-relaxed);
+  font-size: var(--text-sm);
+}
+
+.sealedHash {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--ink);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}

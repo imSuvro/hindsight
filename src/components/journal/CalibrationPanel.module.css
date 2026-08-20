@@ -1,0 +1,246 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+}
+
+/* ------------------------------------------------------------------- hero */
+
+.verdict {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 40rem;
+}
+
+.verdictHeadline {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.125rem);
+  font-weight: 450;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.verdictNumber {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+.verdictOver {
+  color: var(--belief);
+}
+
+.verdictUnder {
+  color: var(--reality);
+}
+
+.verdictBody {
+  color: var(--ink-soft);
+  line-height: var(--leading-relaxed);
+}
+
+/* ------------------------------------------------------------------ tiles */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface);
+}
+
+.tileLabel {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.tileValue {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-lg);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.tileValueMuted {
+  color: var(--ink-faint);
+}
+
+.tileNote {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+  line-height: var(--leading-snug);
+}
+
+/* ---------------------------------------------------------------- section */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 480;
+  letter-spacing: -0.012em;
+}
+
+.sectionNote {
+  max-width: var(--measure);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  line-height: var(--leading-relaxed);
+}
+
+/* -------------------------------------------------------- domain breakdown */
+
+.domainTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.domainTable th,
+.domainTable td {
+  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: middle;
+}
+
+.domainTable thead th {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom-color: var(--rule-strong);
+}
+
+.domainName {
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.domainNumber {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.domainPending {
+  color: var(--ink-faint);
+  font-size: var(--text-xs);
+}
+
+/*
+ * A single-hue bar, because the row label already carries identity — a
+ * five-colour scheme here would add nothing a reader could not already see.
+ * The gap bar diverges from a centre line, so direction is read from position.
+ */
+.gapTrack {
+  position: relative;
+  width: 100%;
+  min-width: 6rem;
+  height: 10px;
+  background: var(--surface-sunk);
+  border-radius: 1px;
+}
+
+.gapCentre {
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  bottom: -2px;
+  width: 1px;
+  background: var(--rule-strong);
+}
+
+.gapFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 1px;
+}
+
+.gapFillOver {
+  background: var(--belief);
+}
+
+.gapFillUnder {
+  background: var(--reality);
+}
+
+/* ----------------------------------------------------------- locked state */
+
+.locked {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  max-width: 34rem;
+}
+
+.lockedTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 480;
+}
+
+.lockedBody {
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+}
+
+.progressRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.progressCount {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-xl);
+  letter-spacing: -0.03em;
+}
+
+.progressLabel {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.progressTrack {
+  position: relative;
+  height: 4px;
+  background: var(--surface-sunk);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--reality);
+  border-radius: 2px;
+}

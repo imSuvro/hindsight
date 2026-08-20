@@ -1,0 +1,249 @@
+.figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.plotFrame {
+  position: relative;
+  width: 100%;
+  max-width: 30rem;
+}
+
+.plot {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* -------------------------------------------------------------- furniture */
+
+.axisLine {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+
+.gridLine {
+  stroke: var(--rule);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+.referenceLine {
+  stroke: var(--reference);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+  fill: none;
+}
+
+.referenceLabel {
+  fill: var(--ink-faint);
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.tickLabel {
+  fill: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.axisTitle {
+  fill: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------------ marks */
+
+/*
+ * The gap between a point and the diagonal is the finding, so it is drawn.
+ * Line style carries the direction as well as colour: solid when confidence
+ * outran reality, dashed when it lagged.
+ */
+.gapOver {
+  stroke: var(--belief);
+  stroke-width: 1.5;
+}
+
+.gapUnder {
+  stroke: var(--reality);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+
+.intervalOver,
+.intervalUnder {
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.intervalOver {
+  stroke: var(--belief);
+  opacity: 0.5;
+}
+
+.intervalUnder {
+  stroke: var(--reality);
+  opacity: 0.5;
+}
+
+.pointOver {
+  fill: var(--belief);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
+.pointUnder {
+  fill: var(--reality);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
+.pointEven {
+  fill: var(--ink-soft);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
+/* ------------------------------------------------------- hover and focus */
+
+/*
+ * Readouts appear on hover and on keyboard focus, with no JavaScript: the
+ * chart is a server component and stays one.
+ */
+.mark {
+  cursor: default;
+}
+
+.mark:focus {
+  outline: none;
+}
+
+.readout {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.mark:hover .readout,
+.mark:focus-visible .readout {
+  opacity: 1;
+}
+
+.mark:focus-visible .pointOver,
+.mark:focus-visible .pointUnder,
+.mark:focus-visible .pointEven {
+  stroke: var(--reality-bright);
+  stroke-width: 3;
+}
+
+.readoutBox {
+  fill: var(--ink);
+  rx: 3;
+}
+
+.readoutText {
+  fill: var(--ink-inverse);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----------------------------------------------------------------- legend */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  list-style: none;
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.legendSwatch {
+  flex: none;
+  width: 18px;
+  height: 10px;
+}
+
+/* -------------------------------------------------------------- annotation */
+
+.annotation {
+  max-width: 30rem;
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--ink-soft);
+  border-left: 2px solid var(--rule-strong);
+  padding-left: var(--space-4);
+}
+
+.annotationStrong {
+  color: var(--ink);
+  font-weight: 550;
+}
+
+/* ------------------------------------------------------------ table view */
+
+.tableToggle {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.tableToggle > summary {
+  cursor: pointer;
+  padding: var(--space-1) 0;
+  width: fit-content;
+}
+
+.table {
+  width: 100%;
+  margin-top: var(--space-3);
+  border-collapse: collapse;
+  font-size: var(--text-xs);
+}
+
+.table caption {
+  text-align: left;
+  padding-bottom: var(--space-2);
+  color: var(--ink-faint);
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+.table th {
+  font-weight: 600;
+  color: var(--ink-faint);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.table td {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.tableTextCell {
+  font-family: var(--font-body) !important;
+}

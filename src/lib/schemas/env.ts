@@ -40,9 +40,11 @@ const baseSchema = z.object({
 
   EMAIL_MODE: z.enum(["log", "brevo"]).default("log"),
   BREVO_API_KEY: z.string().optional(),
+  // The default only ever reaches the logging transport, so it points at the
+  // reserved .invalid TLD rather than somewhere mail could actually go.
   EMAIL_FROM: z
     .email("EMAIL_FROM must be an email address")
-    .default("hindsight@localhost"),
+    .default("no-reply@hindsight.invalid"),
   EMAIL_REPLY_TO: z.email("EMAIL_REPLY_TO must be an email address").optional(),
 
   AUTH_TEST_MODE: z.string().optional(),

@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/auth/session";
 import { dbContext } from "@/lib/db/client";
-import { getDecision } from "@/lib/db/decisions";
 import {
   DecisionAlreadyResolvedError,
   DecisionNotFoundError,
@@ -32,6 +31,10 @@ import {
  * Nothing here updates anything. Each action appends one event to the ledger
  * and lets the projection follow, so there is no way to change a journal that
  * does not also leave a record of the change.
+ *
+ * Every export from a `"use server"` module becomes a callable endpoint, so
+ * this file exports only the three writes and nothing else. Reads happen
+ * directly in the server components that need them.
  */
 
 export type ActionState = {
@@ -188,10 +191,4 @@ export async function rescheduleReview(
   revalidatePath("/review");
   revalidatePath("/decisions");
   redirect(`/decisions/${input.decisionId}`);
-}
-
-/** Ownership is confirmed by the query, not by trusting the id in the URL. */
-export async function loadOwnDecision(decisionId: string) {
-  const session = await requireSession();
-  return getDecision(dbContext(), session.user.id, decisionId);
 }

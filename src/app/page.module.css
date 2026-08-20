@@ -46,7 +46,16 @@
 
 /* ------------------------------------------------------------------- hero */
 
+/*
+ * The claim on the left, the evidence for it on the right, at the same eye
+ * level. Stacked, the specimen reads as an illustration of the paragraph above
+ * it; side by side it reads as the argument, which is what it is.
+ */
 .hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+  align-items: center;
+  gap: var(--space-8);
   max-width: var(--page-max);
   width: 100%;
   margin: 0 auto;
@@ -124,10 +133,10 @@
  */
 .specimen {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr;
   align-items: stretch;
   gap: 0;
-  margin-top: var(--space-8);
+  margin: 0;
   border: 1px solid var(--rule);
   border-radius: var(--radius-lg);
   background: var(--surface);
@@ -147,7 +156,7 @@
 }
 
 .specimenDivider {
-  width: 1px;
+  height: 1px;
   background: var(--rule);
 }
 
@@ -319,19 +328,18 @@
 
 /* ------------------------------------------------------------ responsive */
 
+@media (max-width: 62rem) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+}
+
 @media (max-width: 56rem) {
   .stepList {
     grid-template-columns: 1fr;
     gap: var(--space-4);
-  }
-
-  .specimen {
-    grid-template-columns: 1fr;
-  }
-
-  .specimenDivider {
-    width: auto;
-    height: 1px;
   }
 }
 

@@ -35,6 +35,8 @@ const PLOT = SIZE - PAD_LEFT - PAD_RIGHT;
 
 const MIN_RADIUS = 5;
 const MAX_RADIUS = 13;
+/** Keeps the gap bracket clear of the interval that shares the point's x. */
+const GAP_OFFSET = 7;
 
 type Direction = "over" | "under" | "even";
 
@@ -134,11 +136,19 @@ export function ReliabilityDiagram({
             x2={x(1)}
             y2={y(1)}
           />
+          {/*
+            Set along the diagonal rather than above it, and low on the line.
+            Laid horizontally near the top it sat across whatever point happened
+            to be plotted there; down here it labels the line without competing
+            with the data, since low-confidence decisions are the sparsest part
+            of most journals.
+          */}
           <text
             className={styles.referenceLabel}
-            x={x(1) - 4}
-            y={y(1) + 12}
-            textAnchor="end"
+            transform={`rotate(-45, ${x(0.3) + 8}, ${y(0.3) + 8})`}
+            x={x(0.3) + 8}
+            y={y(0.3) + 8}
+            textAnchor="middle"
           >
             Perfect calibration
           </text>
@@ -182,21 +192,50 @@ export function ReliabilityDiagram({
                 role="img"
                 aria-label={describe(bin)}
               >
+                {/*
+                  The gap is offset to the left of the point and bracketed at
+                  the diagonal end, so it reads as a measurement of the distance
+                  rather than merging into the interval that shares its x.
+                */}
                 {direction !== "even" && (
-                  <line
-                    className={gapClass}
-                    x1={cx}
-                    y1={cy}
-                    x2={cx}
-                    y2={y(bin.meanForecast)}
-                  />
+                  <>
+                    <line
+                      className={gapClass}
+                      x1={cx - GAP_OFFSET}
+                      y1={cy}
+                      x2={cx - GAP_OFFSET}
+                      y2={y(bin.meanForecast)}
+                    />
+                    <line
+                      className={gapClass}
+                      x1={cx - GAP_OFFSET - 3}
+                      y1={y(bin.meanForecast)}
+                      x2={cx - GAP_OFFSET + 3}
+                      y2={y(bin.meanForecast)}
+                    />
+                  </>
                 )}
+                {/* Interval with end caps, so it reads as an error bar. */}
                 <line
                   className={intervalClass}
                   x1={cx}
                   y1={y(bin.interval.lower)}
                   x2={cx}
                   y2={y(bin.interval.upper)}
+                />
+                <line
+                  className={intervalClass}
+                  x1={cx - 3.5}
+                  y1={y(bin.interval.upper)}
+                  x2={cx + 3.5}
+                  y2={y(bin.interval.upper)}
+                />
+                <line
+                  className={intervalClass}
+                  x1={cx - 3.5}
+                  y1={y(bin.interval.lower)}
+                  x2={cx + 3.5}
+                  y2={y(bin.interval.lower)}
                 />
                 <circle className={pointClass} cx={cx} cy={cy} r={radius} />
 
@@ -225,7 +264,7 @@ export function ReliabilityDiagram({
         </svg>
       </div>
 
-      <ul className={styles.legend}>
+      <ul className={styles.legendList}>
         <li className={styles.legendItem}>
           <svg className={styles.legendSwatch} viewBox="0 0 18 10" aria-hidden="true">
             <line className={styles.gapOver} x1="0" y1="5" x2="18" y2="5" />
@@ -250,7 +289,7 @@ export function ReliabilityDiagram({
       </ul>
 
       {insight ? (
-        <figcaption className={styles.annotation}>
+        <p className={styles.annotation}>
           <span className={styles.annotationStrong}>
             When you said{" "}
             {insight.bin.lowerConfidence === insight.bin.upperConfidence
@@ -260,15 +299,15 @@ export function ReliabilityDiagram({
           </span>{" "}
           That is your widest gap between confidence and outcome, across{" "}
           {insight.bin.count} decisions.
-        </figcaption>
+        </p>
       ) : (
-        <figcaption className={styles.annotation}>
+        <p className={styles.annotation}>
           <span className={styles.annotationStrong}>
             No band is meaningfully off the line.
           </span>{" "}
           Across {scoredCount} resolved decisions, your stated confidence has tracked what
           actually happened.
-        </figcaption>
+        </p>
       )}
 
       <details className={styles.tableToggle}>

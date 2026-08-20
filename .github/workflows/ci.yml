@@ -61,7 +61,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # Downloading mongod on every run is the main source of flake here.
       - name: Cache mongod binary
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .cache/mongodb-binaries
           key: mongod-${{ runner.os }}-${{ env.MONGOMS_VERSION }}

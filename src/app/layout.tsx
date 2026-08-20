@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Newsreader, Spline_Sans_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 
 /**
@@ -57,7 +58,13 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Reading the per-request nonce is what opts every route into dynamic
+  // rendering, which a nonce-based CSP requires: a prerendered shell would
+  // carry a stale nonce and every script on the page would be refused.
+  // See src/proxy.ts.
+  await headers();
+
   return (
     <html
       lang="en"

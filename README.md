@@ -15,9 +15,15 @@ the things you are 80% sure about happen 80% of the time.
 fact, everyone remembers having had doubts. Hindsight makes the original belief
 permanent, and then scores it.
 
-**[See what it looks like →](docs/screenshots/)** — or run it locally and open
-`/demo`, a sample journal of four years of someone else's decisions with the
-predictions exactly as sealed. No sign-in, nothing saved.
+**[Try the sample journal →](https://hindsight-suvros-projects.vercel.app/demo)**
+— four years of someone else's decisions, the predictions exactly as sealed,
+and the calibration they add up to. No sign-in, nothing saved.
+[Screenshots](docs/screenshots/) if you would rather not click.
+
+> **Note on the live deployment.** It runs with no database configured, so the
+> landing page, the sample journal and the methodology page work and sign-in
+> does not. That is the deployment reporting its own state rather than a fault;
+> [docs/deploying.md](docs/deploying.md) covers finishing the setup.
 
 ---
 
@@ -91,9 +97,11 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-`.env.example` documents every variable and where to get it. The app validates
-its environment at boot and refuses to start half-configured rather than failing
-later somewhere harder to diagnose.
+**Nothing needs configuring to start.** With an empty `.env.local` you get the
+landing page, the sample journal and the methodology page, and the server prints
+which features it can actually perform. Each block in `.env.example` unlocks one
+more. A variable that is _present but malformed_ still fails hard — missing
+means "feature off", wrong means "somebody typed this incorrectly".
 
 **The test suites need no credentials.** Integration tests start an in-memory
 MongoDB replica set; email defaults to a transport that prints instead of
@@ -163,6 +171,11 @@ Written down so nobody has to discover them.
 - **Selection bias is unmeasurable.** You choose which decisions to record.
   Someone who only logs the ones they feel clever about gets a flattering curve
   and no scoring rule can detect it.
+- **It will not deploy to Cloudflare Workers.** Next.js 16 pins the proxy to the
+  Node.js runtime and refuses to let it be edge; OpenNext's Cloudflare adapter
+  refuses Node.js middleware. Getting past that means deleting the proxy, which
+  is where the CSP nonce is generated. Re-tested and written up in
+  [ADR-0001](docs/adr/0001-hosting.md).
 - **No mobile app, no sharing, no export to other journals.** Sharing and streaks
   were considered and cut — see [Scope](docs/adr/0007-domain-taxonomy.md) and
   CONTRIBUTING.

@@ -1,5 +1,5 @@
 import { type Db, MongoClient } from "mongodb";
-import { env } from "@/lib/schemas/env";
+import { requireDatabaseUrl } from "@/lib/schemas/env";
 import type { DbContext } from "./ledger";
 
 /**
@@ -19,7 +19,7 @@ const globalForMongo = globalThis as typeof globalThis & {
 };
 
 function createClient(): MongoClient {
-  return new MongoClient(env().MONGODB_URI, {
+  return new MongoClient(requireDatabaseUrl(), {
     maxPoolSize: 8,
     minPoolSize: 0,
     maxIdleTimeMS: 60_000,

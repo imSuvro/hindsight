@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { SignInButtons } from "@/components/forms/SignInButtons";
 import { PageShell } from "@/components/layout/PageShell";
 import { getSession } from "@/lib/auth/session";
-import { configuredProviders } from "@/lib/schemas/env";
+import { features } from "@/lib/schemas/env";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -46,11 +46,13 @@ export default async function SignInPage(props: PageProps<"/sign-in">) {
   const params = await props.searchParams;
   const rawNext = params.next;
   const next = safeNext(typeof rawNext === "string" ? rawNext : undefined);
-  const available = configuredProviders();
-  const providers = [
-    ...(available.google ? (["google"] as const) : []),
-    ...(available.github ? (["github"] as const) : []),
-  ];
+  const state = features();
+  const providers = state.auth
+    ? [
+        ...(state.providers.google ? (["google"] as const) : []),
+        ...(state.providers.github ? (["github"] as const) : []),
+      ]
+    : [];
 
   return (
     <PageShell>
@@ -61,7 +63,11 @@ export default async function SignInPage(props: PageProps<"/sign-in">) {
             Sign in with an account you already have. There is no password to create,
             because Hindsight never stores one.
           </p>
-          <SignInButtons providers={[...providers]} next={next} />
+          <SignInButtons
+            providers={[...providers]}
+            next={next}
+            hasDatabase={state.database}
+          />
           <p className={styles.fine}>
             Signing in creates a journal that only you can read. What gets stored is
             listed in full on the{" "}

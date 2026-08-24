@@ -61,9 +61,12 @@ const MARKS: Record<Provider, () => React.ReactElement> = {
 export function SignInButtons({
   providers,
   next,
+  hasDatabase = true,
 }: {
   providers: Provider[];
   next: string;
+  /** False when this deployment has no journal database at all. */
+  hasDatabase?: boolean;
 }) {
   const [busy, setBusy] = useState<Provider | null>(null);
   const [failed, setFailed] = useState<string | null>(null);
@@ -88,9 +91,15 @@ export function SignInButtons({
   if (providers.length === 0) {
     return (
       <p className={styles.unavailable}>
-        No sign-in provider is configured on this deployment. If you are running Hindsight
-        yourself, add a Google or GitHub OAuth client to your environment —{" "}
-        <code>.env.example</code> lists what is needed.
+        {hasDatabase
+          ? "Sign-in is not configured on this deployment: no OAuth provider has been registered."
+          : "This deployment has no journal database, so accounts cannot be created on it."}{" "}
+        The sample journal works either way. If you are running Hindsight yourself,{" "}
+        <code>.env.example</code> lists what each variable is, and{" "}
+        <a href="https://github.com/imSuvro/hindsight/blob/main/docs/deploying.md">
+          docs/deploying.md
+        </a>{" "}
+        walks through getting them.
       </p>
     );
   }

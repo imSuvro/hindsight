@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Newsreader, Spline_Sans_Mono } from "next/font/google";
 import { headers } from "next/headers";
+import { siteUrl } from "@/lib/schemas/env";
 import "./globals.css";
 
 /**
@@ -28,7 +29,7 @@ const splineSansMono = Spline_Sans_Mono({
   variable: "--font-spline-mono",
 });
 
-const SITE_URL = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+const SITE_URL = siteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ObjectId } from "mongodb";
-import { auth } from "@/lib/auth/auth";
+import { authOrNull } from "@/lib/auth/auth";
 import { deleteAccount } from "@/lib/auth/account";
 import { requireSession } from "@/lib/auth/session";
 import { dbContext, getDb } from "@/lib/db/client";
@@ -85,7 +85,7 @@ export async function deleteMyAccount(
   // The session rows are already gone; this clears the cookie too, so the
   // browser is not left holding a token for an account that no longer exists.
   try {
-    await auth.api.signOut({ headers: await headers() });
+    await authOrNull()?.api.signOut({ headers: await headers() });
   } catch {
     // The session it wanted to revoke has been deleted already. Nothing to do.
   }

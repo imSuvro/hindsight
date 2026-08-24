@@ -52,7 +52,7 @@ minute to come back. That is precisely the visit pattern Hindsight has. Render
 Cron Jobs are not available on the free tier at all — they bill per second with
 a $1/month minimum — so it would not have solved the scheduling problem either.
 
-### Cloudflare Workers free — rejected
+### Cloudflare Workers free — rejected, and re-tested since
 
 `node:net` and TLS sockets do work in workerd now, and the MongoDB driver can
 be coaxed into running. But MongoDB publishes no support statement for it,
@@ -61,6 +61,27 @@ there is no cross-invocation connection pooling without building a Durable
 Object in front of it, and the free plan caps CPU at 10 ms per invocation —
 which a cold TLS handshake plus SCRAM authentication can exceed on its own.
 Attractive for the cron trigger, unsuitable as the data layer.
+
+**Re-tested 2026-08-21**, because the operator had `wrangler` authenticated and
+asked whether deploying there was possible. It is not, and the reason is now
+sharper than the original one:
+
+- `@opennextjs/cloudflare@1.20.2` supports Next.js 16.2.11 and later, so the
+  adapter itself is no longer the obstacle.
+- The build fails at a hard `process.exit(1)`:
+  _"Node.js middleware is not currently supported. Consider switching to Edge
+  Middleware."_
+- Next.js 16 does not allow that switch. From its own documentation:
+  _"Proxy defaults to using the Node.js runtime. The `runtime` config option is
+  not available in Proxy files. Setting the `runtime` config option in Proxy
+  will throw an error."_
+
+The only way through is to delete `src/proxy.ts`, and that is where the
+per-request CSP nonce is generated. Losing it means `script-src` falls back to
+`'unsafe-inline'` — every inline script on the page trusted again. Weakening the
+security posture of the shipped product to gain a second copy of it is a bad
+trade, so this stays rejected until either Next.js allows an edge proxy or
+OpenNext supports a Node.js one.
 
 ### Fly.io and Railway — rejected
 

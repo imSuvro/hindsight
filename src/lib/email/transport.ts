@@ -1,4 +1,4 @@
-import { env } from "@/lib/schemas/env";
+import { env, features } from "@/lib/schemas/env";
 
 /**
  * Sending mail, behind one small interface.
@@ -93,7 +93,9 @@ export function emailTransport(): EmailTransport {
   if (cached) return cached;
   const config = env();
 
-  if (config.EMAIL_MODE === "brevo") {
+  // `features()` has already decided: brevo only when the key is actually
+  // there. A missing key costs the send, not the whole server.
+  if (features().email === "brevo") {
     if (!config.BREVO_API_KEY) {
       throw new Error("EMAIL_MODE is brevo but BREVO_API_KEY is missing");
     }

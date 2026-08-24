@@ -2,7 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import type { NextRequest } from "next/server";
 import { dbContext } from "@/lib/db/client";
 import { runResurface } from "@/lib/jobs/resurface";
-import { env } from "@/lib/schemas/env";
+import { features, requireCronSecret, siteUrl } from "@/lib/schemas/env";
 
 /**
  * The scheduled job, as a plain HTTP endpoint.
@@ -21,7 +21,7 @@ export const maxDuration = 120;
 function authorised(request: NextRequest): boolean {
   const header = request.headers.get("authorization") ?? "";
   const presented = header.startsWith("Bearer ") ? header.slice(7) : "";
-  const expected = env().CRON_SECRET;
+  const expected = requireCronSecret();
 
   // Compare in constant time, and compare lengths first because
   // timingSafeEqual throws on a mismatch rather than returning false.
@@ -32,6 +32,19 @@ function authorised(request: NextRequest): boolean {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
+  // Never configured for this is a different thing from broken, and deserves a
+  // different status code — otherwise a monitor pages someone over a
+  // deployment that was never meant to run the job.
+  if (!features().scheduledJobs) {
+    return Response.json(
+      {
+        error: "Scheduled resurfacing is not configured on this deployment.",
+        documentation: "https://github.com/imSuvro/hindsight/blob/main/docs/deploying.md",
+      },
+      { status: 503, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
   if (!authorised(request)) {
     return Response.json({ error: "Not authorised" }, { status: 401 });
   }
@@ -39,7 +52,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   try {
     const summary = await runResurface(dbContext(), {
       now: Date.now(),
-      baseUrl: env().BETTER_AUTH_URL,
+      baseUrl: siteUrl(),
     });
     return Response.json(summary, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {

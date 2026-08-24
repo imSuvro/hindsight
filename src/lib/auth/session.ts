@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { type Session, auth } from "./auth";
+import { type Session, authOrNull } from "./auth";
 
 /**
  * Session lookup for server components and route handlers.
@@ -10,9 +10,15 @@ import { type Session, auth } from "./auth";
  * visitors somewhere useful, but it is not a security boundary and nothing
  * relies on it — that mistake is exactly the shape of the fail-open advisory
  * discussed in ADR-0006.
+ *
+ * On a deployment with no database or no session secret there is no auth
+ * instance at all, and every lookup here returns `null`. That is indistinguish-
+ * able from being signed out, which is the correct behaviour: it fails closed.
  */
 
 export async function getSession(): Promise<Session | null> {
+  const auth = authOrNull();
+  if (!auth) return null;
   return auth.api.getSession({ headers: await headers() });
 }
 

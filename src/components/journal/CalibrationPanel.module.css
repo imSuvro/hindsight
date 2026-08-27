@@ -110,6 +110,18 @@
 
 /* -------------------------------------------------------- domain breakdown */
 
+/*
+ * Five columns do not fit a 360px screen — this overflowed the page by 13px,
+ * which is invisible on a desktop and scrolls every phone narrower than a Pixel
+ * sideways. It scrolls within itself instead of stacking, because the point of
+ * the table is comparing domains down a column. DESIGN.md § Components.
+ */
+.domainScroll {
+  overflow-x: auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
 .domainTable {
   width: 100%;
   border-collapse: collapse;

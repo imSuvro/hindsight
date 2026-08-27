@@ -51,8 +51,9 @@ const baseSchema = z.object({
   GITHUB_CLIENT_ID: optionalText,
   GITHUB_CLIENT_SECRET: optionalText,
 
-  EMAIL_MODE: z.enum(["log", "brevo"]).default("log"),
+  EMAIL_MODE: z.enum(["log", "brevo", "smtp2go"]).default("log"),
   BREVO_API_KEY: optionalText,
+  SMTP2GO_API_KEY: optionalText,
   // The default only ever reaches the logging transport, so it points at the
   // reserved .invalid TLD rather than somewhere mail could actually go.
   EMAIL_FROM: z
@@ -114,7 +115,7 @@ export type Features = {
   /** The resurfacing endpoint will accept a call. */
   scheduledJobs: boolean;
   /** Which transport review emails go through. */
-  email: "log" | "brevo";
+  email: "log" | "brevo" | "smtp2go";
   providers: { google: boolean; github: boolean };
 };
 
@@ -131,7 +132,12 @@ export function features(): Features {
     scheduledJobs: database && Boolean(e.CRON_SECRET),
     // Falling back rather than throwing: a missing key should cost you the
     // send, not the whole server.
-    email: e.EMAIL_MODE === "brevo" && e.BREVO_API_KEY ? "brevo" : "log",
+    email:
+      e.EMAIL_MODE === "brevo" && e.BREVO_API_KEY
+        ? "brevo"
+        : e.EMAIL_MODE === "smtp2go" && e.SMTP2GO_API_KEY
+          ? "smtp2go"
+          : "log",
     providers,
   };
 }

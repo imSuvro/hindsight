@@ -63,18 +63,18 @@ command thousands of times a day for nothing.
 **operator.** Paste these into **Project → Settings → Environment Variables**,
 scoped to **Production**:
 
-| Variable                                    | Value                                 |
-| ------------------------------------------- | ------------------------------------- |
-| `MONGODB_URI`                               | from step 1                           |
-| `BETTER_AUTH_URL`                           | the production URL, no trailing slash |
-| `BETTER_AUTH_SECRET`                        | `openssl rand -base64 32`             |
-| `CRON_SECRET`                               | `openssl rand -hex 32`                |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | step 3                                |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | step 3                                |
-| `EMAIL_MODE`                                | `brevo`                               |
-| `BREVO_API_KEY`                             | step 4                                |
-| `EMAIL_FROM`                                | the address verified in Brevo         |
-| `EMAIL_REPLY_TO`                            | an address you actually read          |
+| Variable                                    | Value                                   |
+| ------------------------------------------- | --------------------------------------- |
+| `MONGODB_URI`                               | from step 1                             |
+| `BETTER_AUTH_URL`                           | the production URL, no trailing slash   |
+| `BETTER_AUTH_SECRET`                        | `openssl rand -base64 32`               |
+| `CRON_SECRET`                               | `openssl rand -hex 32`                  |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | step 3                                  |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | step 3                                  |
+| `EMAIL_MODE`                                | `brevo` or `smtp2go`                    |
+| `BREVO_API_KEY` or `SMTP2GO_API_KEY`        | step 4                                  |
+| `EMAIL_FROM`                                | the address verified with that provider |
+| `EMAIL_REPLY_TO`                            | an address you actually read            |
 
 **Never set `AUTH_TEST_MODE` in production.** It would be refused anyway — the
 gate also requires `VERCEL_ENV` to not be `production`, and there is a test
@@ -121,22 +121,35 @@ page. With neither configured, nobody can sign in.
 
 ---
 
-## 4. Brevo — review emails
+## 4. Email — Brevo or SMTP2GO — review emails
 
-**operator**
+**operator.** Pick one. Both are free, both work without owning a domain, both
+plug into the same `EMAIL_MODE` switch — see [ADR-0005](adr/0005-email-provider.md)
+for the trade-off. Brevo is the one to reach for first (higher headroom); use
+SMTP2GO if Brevo's dashboard is down or being uncooperative.
+
+### Option A: Brevo
 
 1. Create a free account at [brevo.com](https://www.brevo.com). The free tier is
    300 sends a day with no monthly cap.
 2. **Senders** → add and verify the address you want mail to come from. Brevo
    emails a six-digit code; no domain is required.
 3. **SMTP & API → API Keys** → create a v3 key.
+4. Set `EMAIL_MODE=brevo` and `BREVO_API_KEY`.
 
 Expect the visible sender to be rewritten to something like
 `hindsight@5000001.brevosend.com`. Brevo does that because it cannot authenticate
 a free-mail domain, and an address it _can_ authenticate is worth more than a
 pretty one. The messages carry a friendly display name and a real Reply-To.
-[ADR-0005](adr/0005-email-provider.md) has the full trade-off, including the
-~$10/year change that removes it.
+
+### Option B: SMTP2GO
+
+1. Create a free account at [smtp2go.com](https://www.smtp2go.com). The free
+   tier is 1,000 sends a month, 200/day, 25/hour for an unverified sender.
+2. **Settings → Sender Domains/Senders** → verify the single address you want
+   mail to come from (email code, no domain needed).
+3. **API Keys** → create one.
+4. Set `EMAIL_MODE=smtp2go` and `SMTP2GO_API_KEY`.
 
 To check the wiring without waiting for a real review, set `EMAIL_MODE=log` and
 watch the runtime logs — the message is printed instead of sent.

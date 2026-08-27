@@ -17,17 +17,30 @@ will only send to your own address, which is useless for a real product.
 
 ## Decision
 
-Use **Brevo** (formerly Sendinblue) with a single verified sender address.
+Use **Brevo** (formerly Sendinblue) with a single verified sender address as
+the primary transport, with **SMTP2GO** implemented as a same-shape
+alternative — same interface, same free-without-a-domain constraint satisfied,
+switched by one environment variable rather than a code change.
 
-Sending goes through a transport interface with two implementations:
+Sending goes through a transport interface with three implementations:
 
 ```
-EMAIL_MODE=log    → prints the notification, sends nothing
-EMAIL_MODE=brevo  → sends for real
+EMAIL_MODE=log      → prints the notification, sends nothing
+EMAIL_MODE=brevo    → sends for real, via Brevo's REST API
+EMAIL_MODE=smtp2go  → sends for real, via SMTP2GO's REST API
 ```
 
 Development, tests, CI and the end-to-end suite all run on `log`, so no test
 run can ever reach a real inbox or consume quota.
+
+**Why both are implemented, not just Brevo.** The reasoning below still holds —
+Brevo's daily-cap-only free tier has more headroom than SMTP2GO's 25/hour
+unverified-sender limit, so Brevo is the one to reach for first. But this is
+a two-person-team's worth of external dependency (an account on a vendor
+neither of us runs), and vendor dashboards go down or get flaky exactly when
+you're mid-setup and least able to wait. `Smtp2goTransport` in
+`src/lib/email/transport.ts` exists so that a flaky Brevo signup doesn't block
+getting a deployment fully working — flip `EMAIL_MODE` and move on.
 
 ## Options considered
 
@@ -43,7 +56,8 @@ run can ever reach a real inbox or consume quota.
 
 Brevo over SMTP2GO on headroom: 300/day with no monthly ceiling absorbs a burst
 of due reminders, whereas SMTP2GO's 25/hour unverified-sender cap would throttle
-exactly the case where several decisions come due at once.
+exactly the case where several decisions come due at once. That headroom
+argument is why Brevo stays primary even though both are implemented.
 
 ## The deliverability trade-off, stated plainly
 

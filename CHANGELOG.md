@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-08-27
+
+### Added
+
+- SMTP2GO as an alternate email transport alongside Brevo (`EMAIL_MODE=smtp2go`,
+  `SMTP2GO_API_KEY`), so a Brevo outage or signup issue doesn't block getting
+  review notifications working. Same interface, same free-without-a-domain
+  constraint. See [ADR-0005](docs/adr/0005-email-provider.md).
+
+## [0.2.0] — 2026-08-24
+
+### Changed
+
+- The app now runs in a degraded-but-functional mode with zero configuration
+  instead of refusing to start. Every credential is optional; each feature
+  reports its own availability, and a variable that is present but malformed
+  still fails hard. This is what let a Vercel-connector-created project (which
+  starts with an empty environment, since the connector has no tool for setting
+  environment variables) build and serve at all.
+- Published the live production URL and the sample journal link.
+- Recorded, with evidence, why the app cannot currently deploy to Cloudflare
+  Workers — see [ADR-0001](docs/adr/0001-hosting.md).
+
 ## [0.1.0] — 2026-08-21
 
 First release. The core loop works end to end, the record is tamper-evident, and
@@ -84,5 +107,7 @@ timing is approximate; the hash chain detects tampering rather than preventing
 it, and cannot detect truncation of the newest entries without an external
 witness.
 
-[unreleased]: https://github.com/imSuvro/hindsight/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/imSuvro/hindsight/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/imSuvro/hindsight/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/imSuvro/hindsight/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/imSuvro/hindsight/releases/tag/v0.1.0

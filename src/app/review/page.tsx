@@ -19,6 +19,7 @@ export default async function ReviewPage() {
   ]);
 
   const next = upcoming[0];
+  const nothingAtAll = due.length === 0 && upcoming.length === 0;
 
   return (
     <PageShell
@@ -54,17 +55,24 @@ export default async function ReviewPage() {
       }
     >
       <div className={styles.sections}>
-        <section className={styles.section} aria-labelledby="due-heading">
-          <h2 id="due-heading" className="visually-hidden">
-            Due now
-          </h2>
-          <DecisionList
-            decisions={due}
-            now={journal.now}
-            timeZone={journal.timeZone}
-            emptyMessage="Nothing is due. Everything you have recorded is either answered or still ahead of its review date."
-          />
-        </section>
+        {/*
+          An entirely empty queue gets one empty state, not two stacked on top
+          of each other. The list's own "nothing is due" line only earns its
+          place when something is genuinely waiting behind it.
+        */}
+        {!nothingAtAll && (
+          <section className={styles.section} aria-labelledby="due-heading">
+            <h2 id="due-heading" className="visually-hidden">
+              Due now
+            </h2>
+            <DecisionList
+              decisions={due}
+              now={journal.now}
+              timeZone={journal.timeZone}
+              emptyMessage="Nothing is due today. Everything you have recorded is either answered or still ahead of its review date."
+            />
+          </section>
+        )}
 
         {upcoming.length > 0 && (
           <section className={styles.section} aria-labelledby="upcoming-heading">
@@ -84,7 +92,7 @@ export default async function ReviewPage() {
           </section>
         )}
 
-        {due.length === 0 && upcoming.length === 0 && (
+        {nothingAtAll && (
           <EmptyState
             title="Your review queue lives here"
             action={

@@ -238,6 +238,17 @@ svg {
 }
 
 /*
+ * `hidden` must actually hide. The attribute's UA rule is `display: none` at
+ * the lowest possible specificity, so any component rule that sets `display`
+ * silently defeats it — which is what left the whole editable form on screen
+ * above the "This is what gets sealed" panel, with the confirmation step
+ * failing to isolate the one irreversible moment in the product.
+ */
+[hidden] {
+  display: none !important;
+}
+
+/*
  * A focus ring you can actually see, on every surface, without the browser
  * default's habit of vanishing against dark backgrounds.
  */

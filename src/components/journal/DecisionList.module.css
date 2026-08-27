@@ -139,13 +139,15 @@
 
 .empty {
   padding: var(--space-6);
+  border-radius: var(--radius-lg);
   background: var(--surface);
   border: 1px dashed var(--rule-strong);
   border-radius: var(--radius);
   color: var(--ink-soft);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
-  max-width: var(--measure);
+  /* Fills its container, like every other card. DESIGN.md § Layout. */
+  width: 100%;
 }
 
 @media (max-width: 34rem) {

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] — 2026-08-28
+
+### Fixed
+
+- Tables no longer scroll the page sideways on a narrow screen. At 360px the
+  five-column domain table pushed `/demo` 13px wider than the viewport, so
+  every phone narrower than a Pixel scrolled horizontally. Both tables now
+  scroll inside their own container — which reverses the stacking rule
+  `DESIGN.md` carried, for a reason recorded in the amendment: these tables
+  exist to be compared down a column, and stacking destroys that.
+- The horizontal-overflow guard now tests 360px explicitly rather than
+  inheriting the mobile project's 412px viewport, and opens every disclosure
+  first. That gap is why the bug reached production.
+
 ## [0.4.0] — 2026-08-28
 
 The interface, rebuilt on a design system that is written down and enforced.
@@ -162,7 +176,8 @@ timing is approximate; the hash chain detects tampering rather than preventing
 it, and cannot detect truncation of the newest entries without an external
 witness.
 
-[unreleased]: https://github.com/imSuvro/hindsight/compare/v0.4.0...HEAD
+[unreleased]: https://github.com/imSuvro/hindsight/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/imSuvro/hindsight/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/imSuvro/hindsight/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/imSuvro/hindsight/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/imSuvro/hindsight/compare/v0.1.0...v0.2.0

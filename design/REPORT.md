@@ -138,21 +138,51 @@ doing it. All fixed, and the rule is now **enforced** — `palette-check.mjs`
 scans every stylesheet and fails the build, verified by reintroducing the exact
 regression and watching it fail.
 
+### P6 · Dark mode and deep QA
+
+**Dark mode.** `AUDIT_SCHEME=dark` re-runs the whole capture under
+`prefers-color-scheme: dark`, so both modes now have the same evidence rather
+than one having numbers and the other having screenshots. It held with no fixes
+needed.
+
+**Edge cases.** Fifteen probes over the inputs and unhappy paths the journey
+specs do not reach. Confirmed already-correct: markup stored as text and never
+executed, emoji and Bengali round-tripping through the ledger intact,
+confidence accepted at exactly 1 and 99, titles capped at 140, whitespace-only
+input treated as empty, unknown and malformed decision ids answered with 404
+rather than 500, and the CSV export prefixing every cell a spreadsheet would
+otherwise execute.
+
+**The second half of the loop had no end-to-end coverage at all.** Review dates
+are forward-only in the form, so nothing can become due inside a test run —
+reading a due decision and recording what happened was proven only at the
+repository layer. `makeDue` shifts a review date in the materialised view so
+the real interface can be driven, and four specs now cover it: answering
+through the UI, the chain staying intact across an outcome, an answered
+decision moving the score, and an unsettled outcome staying out of the score
+rather than being quietly counted as a miss.
+
+**Two real fixes came out of it.** The submit button was disabled with no
+stated reason, which is a dead end and announces as only "dimmed" to a screen
+reader — it now names the missing field through `aria-describedby`. And the
+seeding helper's own documentation was wrong in a way the tests caught: see
+below.
+
 ---
 
 ## Test summary
 
-| Gate                           | Result                                                                                                     |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| Playwright, 3 consecutive runs | **92 passed, 0 failed** each time (4 skipped = the capture harness, correctly inert without `AUDIT_PHASE`) |
-| Console errors                 | **Zero**, before and after (`design/audit/*-console.md`)                                                   |
-| Unit + integration             | **162 passed**, 14 files                                                                                   |
-| Typecheck                      | Clean                                                                                                      |
-| Lint `--max-warnings=0`        | Clean                                                                                                      |
-| Prettier                       | Clean                                                                                                      |
-| Palette validator              | **40 checks + stylesheet scan, all pass**                                                                  |
-| axe WCAG 2.1 A/AA              | Clean on every audited route, both widths                                                                  |
-| Horizontal overflow            | ≤1px on every audited route, 360 and 1440                                                                  |
+| Gate                           | Result                                                                                                      |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| Playwright, 3 consecutive runs | **122 passed, 0 failed** each time (4 skipped = the capture harness, correctly inert without `AUDIT_PHASE`) |
+| Console errors                 | **Zero**, before and after (`design/audit/*-console.md`)                                                    |
+| Unit + integration             | **162 passed**, 14 files                                                                                    |
+| Typecheck                      | Clean                                                                                                       |
+| Lint `--max-warnings=0`        | Clean                                                                                                       |
+| Prettier                       | Clean                                                                                                       |
+| Palette validator              | **40 checks + stylesheet scan, all pass**                                                                   |
+| axe WCAG 2.1 A/AA              | Clean on every audited route, both widths                                                                   |
+| Horizontal overflow            | ≤1px on every audited route, 360 and 1440                                                                   |
 
 `palette-check.mjs` now runs in the CI quality job, so `DESIGN.md`'s claim that
 it does is true rather than aspirational.
@@ -167,11 +197,11 @@ it does is true rather than aspirational.
    fixed — the copy is state-aware — but changing the visibility rule is
    behaviour, not styling, and was not in scope without sign-off.
 
-2. **`/review` populated and `/decisions/[id]` in a due state were never
-   captured.** Review dates are forward-only in the UI, so a due decision
-   cannot be created through it. The states are exercised by
-   `core-loop.spec.ts` against seeded data, but there is no before/after pair
-   for them. Seeding a past-dated decision through the harness would close this.
+2. **`/review` populated and `/decisions/[id]` due have specs but no
+   screenshots.** `makeDue` closed the _testing_ gap — four specs now drive
+   those states through the real interface — but the capture harness still does
+   not shoot them, so there is no before/after pair. Wiring `makeDue` into the
+   capture run would close it.
 
 3. **Toast primitive not built.** `DESIGN.md` specifies one; nothing in the
    product currently raises a transient message, and adding an unused component
@@ -182,10 +212,12 @@ it does is true rather than aspirational.
 
 ## Next steps
 
-- Capture the two missing states above and complete the pairs.
+- Shoot the due states so the screenshot pairs are complete; the specs exist.
 - Consider the `showOnboarding` change once someone owns that call.
-- The dark palette is validated but has no visual pass — every screenshot here
-  is light mode. Worth a sweep at 360 and 1440 in dark before it is trusted.
 - `Skeleton` is built and used nowhere. The screens are server-rendered, so
   there is no client loading state to fill; it will earn its place the first
   time something streams.
+- `makeDue` writes to the materialised view, which is why specs using it assert
+  on `chain` problems rather than an intact record. If a legitimate
+  past-dated append is ever needed, doing it through the ledger would remove
+  that caveat.

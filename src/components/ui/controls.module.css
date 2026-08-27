@@ -372,3 +372,11 @@
     gap: var(--space-1);
   }
 }
+
+/* Why the primary action is unavailable. Sits with the actions, quiet. */
+.blocked {
+  flex-basis: 100%;
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--ink-faint);
+}

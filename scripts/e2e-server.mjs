@@ -17,6 +17,7 @@
  */
 
 import { spawn } from "node:child_process";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { MongoMemoryReplSet } from "mongodb-memory-server";
 
 const PORT = process.env.E2E_PORT ?? "3100";
@@ -27,6 +28,16 @@ const replicaSet = await MongoMemoryReplSet.create({
 // getUri() already carries the replicaSet query string, so the database name
 // has to be passed in rather than appended.
 const uri = replicaSet.getUri("hindsight_e2e");
+
+/*
+ * Publish the address so a spec can seed a state the interface cannot reach.
+ * The only one that matters is a decision whose review date has passed: review
+ * dates are forward-only in the form, so without this the second half of the
+ * core loop — reading a due decision and recording what happened — can only be
+ * tested at the repository layer, never through the interface a user touches.
+ */
+mkdirSync(".e2e", { recursive: true });
+writeFileSync(".e2e/mongo-uri", uri);
 
 const environment = {
   ...process.env,

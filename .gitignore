@@ -47,3 +47,4 @@ dev.log
 /.claude
 
 e2e.log
+.e2e/

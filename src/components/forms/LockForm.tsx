@@ -359,6 +359,7 @@ export function LockForm({ timeZone, today }: LockFormProps) {
             type="submit"
             className={styles.primary}
             disabled={!ready}
+            aria-describedby={ready ? undefined : "lock-blocked"}
             onClick={(event) => {
               event.preventDefault();
               setConfirming(true);
@@ -369,6 +370,20 @@ export function LockForm({ timeZone, today }: LockFormProps) {
           <Link href="/dashboard" className={styles.quiet}>
             Cancel
           </Link>
+          {/*
+            A dimmed button with no stated reason is a dead end — and a screen
+            reader announces only "dimmed", with no cause. Naming what is still
+            missing costs one line and removes the guesswork.
+          */}
+          {!ready && (
+            <p id="lock-blocked" className={styles.blocked} role="status">
+              {!title.trim() && !expected.trim()
+                ? "Fill in the decision and what you expect, and this unlocks."
+                : !title.trim()
+                  ? "Add what you are deciding, and this unlocks."
+                  : "Add what you expect to happen, and this unlocks."}
+            </p>
+          )}
         </div>
       )}
     </form>

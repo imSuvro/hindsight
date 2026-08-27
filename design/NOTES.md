@@ -109,8 +109,50 @@ referenced by the empty-state and card standards, and it costs nothing to have
 ready. But it renders nowhere today, which is stated in the report rather than
 implied by its existence.
 
-## Not attempted: a dark-mode visual pass
+## The dark-mode pass, done
 
-The dark palette is validated numerically — all twenty checks pass — but every
-screenshot in the report is light mode. Numbers passing is not the same as a
-screen looking right. Flagged in the report's next steps rather than claimed.
+`AUDIT_SCHEME=dark` renders the whole capture under `prefers-color-scheme:
+dark`. The palette held: the night ground carries brass and cyan cleanly, the
+reliability diagram separates its two series against the dark surface, and the
+inverted primary reads as primary rather than as a hole in the page. No fixes
+were needed, which is the useful thing to be able to say rather than assume.
+
+## The seed that proved the verifier is stronger than documented
+
+Testing the second half of the loop needed a decision whose review date had
+passed, and review dates are forward-only in the form — correctly, since
+scheduling a review for last Tuesday is meaningless. So `makeDue` shifts
+`reviewAt` in the materialised view.
+
+The first version of that helper carried a comment claiming the specs would
+assert `/api/ledger/verify` still passed afterwards, "which proves the seam was
+not corrupted". **That was wrong, and the test failing is what surfaced it.**
+`auditRecord` rebuilds the decisions from the chain and diffs them against
+what is stored, so a view edited behind the ledger's back is precisely what it
+exists to catch. The claim in the comment was the opposite of the truth.
+
+Two outcomes. The helper's documentation now says what it actually does, and
+the specs using it assert that no problem is of kind `chain` — isolating the
+claim under test from the fixture's known side effect. And the accident became
+a test worth having: editing stored state without a matching ledger entry is
+now asserted to be detected, with a 409 and a `projection` problem, which is
+the operator-tampering scenario ADR-0002 describes.
+
+## The disabled button that explained nothing
+
+`Review before locking` is disabled until both required fields have content —
+correct, and it correctly treats whitespace as empty. But it said nothing about
+why, and a screen reader announces only "dimmed". Two of the first edge-case
+probes were written expecting an error message and failed against a disabled
+control; the app was right and the tests were wrong, but the silence was still
+a small dead end. It now names the field that is missing, wired through
+`aria-describedby`.
+
+## A race I wrote, twice
+
+The resolve tests asserted the submit button's absence to know the write had
+landed. The button relabels to "Recording…" the instant it is pressed, so that
+assertion passes mid-flight and the next navigation raced the server action.
+The radios survive until the form is replaced, so they are the honest signal.
+Worth recording because the failure looked exactly like a product bug — the
+dashboard showing an unanswered decision — and was not.

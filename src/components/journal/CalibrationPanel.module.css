@@ -28,11 +28,11 @@
 }
 
 .verdictOver {
-  color: var(--belief);
+  color: var(--belief-ink);
 }
 
 .verdictUnder {
-  color: var(--reality);
+  color: var(--reality-ink);
 }
 
 .verdictBody {

@@ -20,6 +20,9 @@
  *     as a series at all, so each carries a minimum OKLCH chroma.
  */
 
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
+
 const VERBOSE = process.argv.includes("--verbose");
 
 /* ---------- colour space plumbing ---------- */
@@ -195,6 +198,49 @@ for (const [mode, p] of [
   // A data colour that greys out stops reading as a series.
   check(`${mode} belief chroma`, chroma(p.belief), 0.05, "");
   check(`${mode} reality chroma`, chroma(p.reality), 0.05, "");
+}
+
+/* ---------- the two-bars rule, enforced against the stylesheets ---------- */
+
+/*
+ * `--belief` and `--reality` are tuned to the 3:1 bar that graphics have to
+ * clear. Setting *text* in them lands under the 4.5:1 bar that words have to
+ * clear, which is the whole reason the `-ink` variants exist.
+ *
+ * This is not hypothetical. The accessibility suite caught `.confidence` in
+ * DecisionList doing exactly this right after the palette changed: the old
+ * mark colour happened to clear the text bar, the new one does not, and the
+ * component had been written against the coincidence rather than the rule. A
+ * rule that lives only in a document gets broken by the next component.
+ */
+function cssFiles(dir) {
+  const out = [];
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) out.push(...cssFiles(full));
+    else if (entry.endsWith(".css")) out.push(full);
+  }
+  return out;
+}
+
+const NON_TEXT = /(accent|border|decoration|outline|background|fill|stroke)-color/;
+const TEXT_IN_MARK = /(^|[^-\w])color:\s*var\(--(belief|reality)\)\s*;/;
+
+notes.push("\n— stylesheets —");
+let offenders = 0;
+for (const file of cssFiles("src")) {
+  readFileSync(file, "utf8")
+    .split(/\r?\n/)
+    .forEach((line, index) => {
+      if (NON_TEXT.test(line) || !TEXT_IN_MARK.test(line)) return;
+      offenders += 1;
+      const message = `FAIL  ${file}:${index + 1} sets text in a mark colour — use the -ink variant`;
+      failures.push(message);
+      notes.push(message);
+    });
+}
+if (offenders === 0) {
+  notes.push("pass  no text is set in a mark colour");
 }
 
 console.log(notes.join("\n"));

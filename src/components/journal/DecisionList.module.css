@@ -46,7 +46,7 @@
 }
 
 .statusDue {
-  color: var(--belief);
+  color: var(--belief-ink);
 }
 
 .statusResolved {
@@ -86,7 +86,7 @@
   font-size: var(--text-lg);
   letter-spacing: -0.03em;
   line-height: 1;
-  color: var(--belief);
+  color: var(--belief-ink);
 }
 
 .confidenceTrack {

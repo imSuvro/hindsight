@@ -258,6 +258,29 @@
 .tableToggle {
   font-size: var(--text-sm);
   color: var(--ink-soft);
+  /*
+   * The cells are `nowrap` because a plausible range broken across two lines
+   * stops being one number, which at 360px pushed the table 13px wider than the
+   * viewport and scrolled the whole page sideways.
+   *
+   * Contained here rather than stacked: this table is the chart's data
+   * equivalent, so each row has to stay one point. See DESIGN.md § Components,
+   * which carries the exception and the reason.
+   */
+  min-width: 0;
+}
+
+/*
+ * The scroll container for the numbers table.
+ *
+ * Grid and flex items default to `min-width: auto` and refuse to shrink below
+ * their content, so the reset and the cap are both needed — either alone leaves
+ * the table pushing the page sideways at 360px.
+ */
+.tableScroll {
+  overflow-x: auto;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .tableToggle > summary {

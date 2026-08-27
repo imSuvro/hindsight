@@ -265,8 +265,21 @@ surface in both modes.
   `--danger` border plus a message on error. Labels are always visible; no
   placeholder-as-label.
 - **Card** — `--surface`, hairline border, `--radius-lg`. Fills its container.
-- **Table** — mono numerics, right-aligned; sunk header; hover row. Below
-  768px it becomes stacked rows, never a horizontal scroll.
+- **Table** — mono numerics, right-aligned; sunk header; hover row. On a narrow
+  screen a table **scrolls inside its own container**; the page body never
+  scrolls sideways.
+
+  This replaces an earlier rule that said tables stack into rows below 768px.
+  Both tables in this product exist to be _compared down a column_ — domains
+  against each other, confidence bands against each other — and stacking
+  destroys exactly that, which is the reason a table was chosen over a list.
+  The numbers table under the reliability diagram has a second reason: it is
+  the chart's accessible equivalent, so one row must stay one datapoint.
+
+  A scroll container needs both `overflow-x: auto` **and** `min-width: 0`: grid
+  and flex items default to `min-width: auto` and refuse to shrink below their
+  content, so the overflow rule alone silently does nothing.
+
 - **Toast** — bottom-right desktop, top on mobile; `--shadow-lifted`; polite
   live region; auto-dismiss ≥5s with a visible dismiss.
 - **Skeleton** — the shape of the content it replaces, in `--surface-sunk`,

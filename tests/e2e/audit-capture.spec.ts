@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { type Page, test } from "@playwright/test";
 import { lockDecision, signUp } from "./support";
 
@@ -136,8 +136,8 @@ test.describe(() => {
       ...problems.map((p) => `- \`${p.kind}\` on **${p.route}** — ${p.text}`),
       "",
     ];
+    // Written rather than echoed: the repository's lint allows only `warn` and
+    // `error` on the console, and a capture summary is neither.
     writeFileSync(path, lines.join("\n"));
-    // Echo into the run output too, so a failing capture is visible in the log.
-    console.log(readFileSync(path, "utf8"));
   });
 });

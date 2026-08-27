@@ -351,49 +351,56 @@ export function ReliabilityDiagram({
       {!isFrame && (
         <details className={styles.tableToggle}>
           <summary>Show the numbers</summary>
-          <table className={styles.table}>
-            <caption>
-              Each row is one point on the diagram, built from {scoredCount} resolved
-              decisions.
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">You said</th>
-                <th scope="col">It happened</th>
-                <th scope="col">Decisions</th>
-                <th scope="col">Plausible range</th>
-                <th scope="col">Reading</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bins.map((bin) => {
-                const direction = directionOf(bin);
-                return (
-                  <tr key={bin.index}>
-                    <td>
-                      {bin.lowerConfidence === bin.upperConfidence
-                        ? `${bin.lowerConfidence}%`
-                        : `${bin.lowerConfidence}–${bin.upperConfidence}%`}
-                    </td>
-                    <td>{percent(bin.observedFrequency)}</td>
-                    <td>
-                      {bin.occurred} of {bin.count}
-                    </td>
-                    <td>
-                      {percent(bin.interval.lower)}–{percent(bin.interval.upper)}
-                    </td>
-                    <td className={styles.tableTextCell}>
-                      {direction === "over"
-                        ? "More confident than it turned out"
-                        : direction === "under"
-                          ? "Less confident than it turned out"
-                          : "On the line"}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          {/*
+            An explicit scroll container. `overflow-x` on the <details> itself
+            does not contain the table, so at 360px it pushed the whole page
+            sideways instead.
+          */}
+          <div className={styles.tableScroll}>
+            <table className={styles.table}>
+              <caption>
+                Each row is one point on the diagram, built from {scoredCount} resolved
+                decisions.
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">You said</th>
+                  <th scope="col">It happened</th>
+                  <th scope="col">Decisions</th>
+                  <th scope="col">Plausible range</th>
+                  <th scope="col">Reading</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bins.map((bin) => {
+                  const direction = directionOf(bin);
+                  return (
+                    <tr key={bin.index}>
+                      <td>
+                        {bin.lowerConfidence === bin.upperConfidence
+                          ? `${bin.lowerConfidence}%`
+                          : `${bin.lowerConfidence}–${bin.upperConfidence}%`}
+                      </td>
+                      <td>{percent(bin.observedFrequency)}</td>
+                      <td>
+                        {bin.occurred} of {bin.count}
+                      </td>
+                      <td>
+                        {percent(bin.interval.lower)}–{percent(bin.interval.upper)}
+                      </td>
+                      <td className={styles.tableTextCell}>
+                        {direction === "over"
+                          ? "More confident than it turned out"
+                          : direction === "under"
+                            ? "Less confident than it turned out"
+                            : "On the line"}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </details>
       )}
     </figure>

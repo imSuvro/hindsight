@@ -105,51 +105,53 @@ function DomainBreakdown({ report }: { report: CalibrationReport }) {
       <p className={styles.sectionNote}>
         {`A figure appears once a domain has ${report.thresholds.domain} resolved decisions behind it. Positive means confidence ran ahead of the outcome.`}
       </p>
-      <table className={styles.domainTable}>
-        <thead>
-          <tr>
-            <th scope="col">Domain</th>
-            <th scope="col">Logged</th>
-            <th scope="col">Scored</th>
-            <th scope="col">Brier</th>
-            <th scope="col">Confidence vs outcome</th>
-          </tr>
-        </thead>
-        <tbody>
-          {report.byDomain.map((domain) => {
-            const gap = domain.gap;
-            return (
-              <tr key={domain.domain}>
-                <th scope="row" className={styles.domainName}>
-                  {DOMAIN_LABELS[domain.domain]}
-                </th>
-                <td className={styles.domainNumber}>{domain.logged}</td>
-                <td className={styles.domainNumber}>{domain.scored}</td>
-                <td className={styles.domainNumber}>
-                  {domain.brier === null ? "—" : domain.brier.toFixed(2)}
-                </td>
-                <td>
-                  {gap === null ? (
-                    <span className={styles.domainPending}>
-                      {Math.max(report.thresholds.domain - domain.scored, 0)} more to go
-                    </span>
-                  ) : (
-                    <DivergingBar
-                      value={gap}
-                      extent={0.5}
-                      label={
-                        Math.abs(gap) < 0.02
-                          ? "On the line"
-                          : `${points(gap)} points ${gap > 0 ? "over" : "under"}confident`
-                      }
-                    />
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <div className={styles.domainScroll}>
+        <table className={styles.domainTable}>
+          <thead>
+            <tr>
+              <th scope="col">Domain</th>
+              <th scope="col">Logged</th>
+              <th scope="col">Scored</th>
+              <th scope="col">Brier</th>
+              <th scope="col">Confidence vs outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.byDomain.map((domain) => {
+              const gap = domain.gap;
+              return (
+                <tr key={domain.domain}>
+                  <th scope="row" className={styles.domainName}>
+                    {DOMAIN_LABELS[domain.domain]}
+                  </th>
+                  <td className={styles.domainNumber}>{domain.logged}</td>
+                  <td className={styles.domainNumber}>{domain.scored}</td>
+                  <td className={styles.domainNumber}>
+                    {domain.brier === null ? "—" : domain.brier.toFixed(2)}
+                  </td>
+                  <td>
+                    {gap === null ? (
+                      <span className={styles.domainPending}>
+                        {Math.max(report.thresholds.domain - domain.scored, 0)} more to go
+                      </span>
+                    ) : (
+                      <DivergingBar
+                        value={gap}
+                        extent={0.5}
+                        label={
+                          Math.abs(gap) < 0.02
+                            ? "On the line"
+                            : `${points(gap)} points ${gap > 0 ? "over" : "under"}confident`
+                        }
+                      />
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }

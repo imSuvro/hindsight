@@ -94,14 +94,31 @@ test.describe("layout integrity", () => {
       if (path === "/dashboard" || path === "/review" || path === "/decisions/new") {
         await signUp(page);
       }
+
+      /*
+       * 360 explicitly, not just the project's viewport. The mobile project is
+       * a Pixel 7 at 412px, and a 13px overflow on /demo lived behind that gap
+       * until production was checked at 360 — every phone narrower than a Pixel
+       * scrolled sideways and nothing said so.
+       */
+      await page.setViewportSize({ width: 360, height: 780 });
       await page.goto(path);
       await page.waitForLoadState("networkidle");
+
+      // Anything behind a disclosure counts: it is one tap from being on screen.
+      for (const summary of await page.locator("details > summary").all()) {
+        await summary.click();
+      }
+      await page.waitForTimeout(150);
 
       const overflow = await page.evaluate(() => {
         const doc = document.documentElement;
         return doc.scrollWidth - doc.clientWidth;
       });
-      expect(overflow, `${path} horizontal overflow in px`).toBeLessThanOrEqual(1);
+      expect(
+        overflow,
+        `${path} scrolls sideways by ${overflow}px at 360`,
+      ).toBeLessThanOrEqual(1);
     });
   }
 });

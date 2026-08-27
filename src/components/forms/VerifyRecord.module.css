@@ -18,7 +18,7 @@
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius);
   border: 1px solid var(--rule-strong);
-  max-width: 38rem;
+  max-width: var(--measure-prose);
 }
 
 .good {

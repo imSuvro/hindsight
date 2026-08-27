@@ -240,7 +240,7 @@
 /* -------------------------------------------------------------- annotation */
 
 .annotation {
-  max-width: 26rem;
+  max-width: var(--measure-narrow);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
   color: var(--ink-soft);

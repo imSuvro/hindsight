@@ -104,7 +104,13 @@
   --duration-slow: 420ms;
   --duration-seal: 900ms;
 
+  /* Measures. Every content width comes from this scale so that columns on
+     different screens line up rather than each picking their own number. */
+  --measure-tight: 22rem;
+  --measure-narrow: 26rem;
   --measure: 34rem;
+  --measure-prose: 38rem;
+  --measure-wide: 44rem;
   --page-max: 72rem;
   --rail: 19rem;
 }

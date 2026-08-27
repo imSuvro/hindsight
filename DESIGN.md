@@ -1,7 +1,9 @@
 # Hindsight — design system
 
-**Status: locked.** Every value below is law. Amendments land as commits
-prefixed `design-amendment:` with the reason stated.
+**Status: locked.** Every value below is law. Amendments land as
+`refactor(ui):` commits whose body opens with `design-amendment:` and states
+the reason — the repository's commitlint owns the subject line, so the marker
+lives in the body where it does not fight it.
 
 Validated by `node scripts/palette-check.mjs`, which recomputes every contrast,
 colour-blindness and chroma claim in this document from the hex values
@@ -168,8 +170,20 @@ Elevation is restrained: `--shadow-raised` for cards, `--shadow-lifted` for
 things that float over content (menus, dialogs, toasts). There is no third
 level.
 
-Widths: `--measure` 34rem for prose, `--page-max` 72rem for the shell,
-`--rail` 19rem for the instrument rail.
+Widths come from a scale, so that columns on different screens line up rather
+than each picking their own number:
+
+| Token              | Value | Use                                 |
+| ------------------ | ----- | ----------------------------------- |
+| `--measure-tight`  | 22rem | Sign-in buttons, narrow cards.      |
+| `--measure-narrow` | 26rem | Chart annotations, small panels.    |
+| `--measure`        | 34rem | Prose. The default reading measure. |
+| `--measure-prose`  | 38rem | Long-form pages, sealed panels.     |
+| `--measure-wide`   | 44rem | Forms and settings columns.         |
+| `--page-max`       | 72rem | The shell.                          |
+| `--rail`           | 19rem | The instrument rail.                |
+
+No component may invent a width outside this scale.
 
 ---
 

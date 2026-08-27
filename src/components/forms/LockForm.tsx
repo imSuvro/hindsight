@@ -105,7 +105,7 @@ export function LockForm({ timeZone, today }: LockFormProps) {
             See it
           </Link>
           <Link href="/decisions/new" className={styles.secondary}>
-            Write another
+            Record another
           </Link>
           <Link href="/dashboard" className={styles.primary}>
             Back to the dashboard

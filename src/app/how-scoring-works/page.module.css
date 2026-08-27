@@ -1,5 +1,5 @@
 .article {
-  max-width: 38rem;
+  max-width: var(--measure-prose);
   display: flex;
   flex-direction: column;
   gap: var(--space-7);

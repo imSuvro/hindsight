@@ -74,6 +74,28 @@ function skillReading(skill: number): string {
 
 function DomainBreakdown({ report }: { report: CalibrationReport }) {
   const anyScored = report.byDomain.some((domain) => domain.brier !== null);
+  const anyLogged = report.byDomain.some((domain) => domain.logged > 0);
+
+  /*
+   * Before anything has been answered every cell in this table reads 0 or a
+   * dash, and five rows of nothing is a poor thing to hand somebody on their
+   * first week. The numbers are not hidden once they exist — this only stands
+   * in while there is genuinely nothing to tabulate.
+   */
+  if (!anyScored) {
+    return (
+      <section className={styles.section} aria-labelledby="domains-heading">
+        <h3 id="domains-heading" className={styles.sectionTitle}>
+          Where you are sharper
+        </h3>
+        <p className={styles.sectionNote}>
+          {anyLogged
+            ? `Career, technical, financial, people and personal are scored separately, because being sharp about code says nothing about being sharp about people. Each needs ${report.thresholds.domain} answered decisions before it can say anything.`
+            : `Every decision belongs to one of five parts of life, and each is scored on its own — being sharp about code says nothing about being sharp about people. A figure appears once a domain has ${report.thresholds.domain} answered decisions behind it.`}
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section className={styles.section} aria-labelledby="domains-heading">
@@ -81,9 +103,7 @@ function DomainBreakdown({ report }: { report: CalibrationReport }) {
         Where you are sharper
       </h3>
       <p className={styles.sectionNote}>
-        {anyScored
-          ? `A figure appears once a domain has ${report.thresholds.domain} resolved decisions behind it. Positive means confidence ran ahead of the outcome.`
-          : `Nothing here yet. Each domain needs ${report.thresholds.domain} resolved decisions before it can say anything.`}
+        {`A figure appears once a domain has ${report.thresholds.domain} resolved decisions behind it. Positive means confidence ran ahead of the outcome.`}
       </p>
       <table className={styles.domainTable}>
         <thead>
@@ -141,27 +161,44 @@ function NotYet({ report }: { report: CalibrationReport }) {
 
   return (
     <div className={styles.locked}>
-      <h2 className={styles.lockedTitle}>Not enough yet to say anything true</h2>
-      <div className={styles.progressRow}>
-        <span className={styles.progressCount}>
-          {scored}/{target}
-        </span>
-        <span className={styles.progressLabel}>resolved decisions</span>
+      <div className={styles.lockedCopy}>
+        <h2 className={styles.lockedTitle}>Not enough yet to say anything true</h2>
+        <div className={styles.progressRow}>
+          <span className={styles.progressCount}>
+            {scored}/{target}
+          </span>
+          <span className={styles.progressLabel}>resolved decisions</span>
+        </div>
+        <ProportionBar
+          value={scored / target}
+          tone="reality"
+          height={4}
+          label={`${scored} of ${target} resolved decisions needed`}
+        />
+        <p className={styles.lockedBody}>
+          A calibration curve drawn from a handful of decisions is not a weak signal, it
+          is an invented one.{" "}
+          {unlock
+            ? `${unlock.remaining} more ${unlock.remaining === 1 ? "decision" : "decisions"} with an outcome recorded and you will see ${unlock.unlocks}.`
+            : ""}{" "}
+          Until then, every decision you have resolved is below, exactly as you wrote it.
+        </p>
       </div>
-      <ProportionBar
-        value={scored / target}
-        tone="reality"
-        height={4}
-        label={`${scored} of ${target} resolved decisions needed`}
-      />
-      <p className={styles.lockedBody}>
-        A calibration curve drawn from a handful of decisions is not a weak signal, it is
-        an invented one.{" "}
-        {unlock
-          ? `${unlock.remaining} more ${unlock.remaining === 1 ? "decision" : "decisions"} with an outcome recorded and you will see ${unlock.unlocks}.`
-          : ""}{" "}
-        Until then, every decision you have resolved is below, exactly as you wrote it.
-      </p>
+
+      {/*
+        The instrument, with nothing on it. Showing the empty frame rather than
+        a paragraph means a new journal looks like the thing it will become —
+        the audit found the signed-in dashboard reading as less capable than the
+        sample journal shown before sign-up, which is the wrong way round. No
+        data is plotted, so the display thresholds are untouched.
+      */}
+      <div className={styles.lockedFrame}>
+        <ReliabilityDiagram bins={[]} scoredCount={scored} variant="frame" />
+        <p className={styles.lockedFrameNote}>
+          Your points will land here — what you said along the bottom, what happened up
+          the side. The closer to the diagonal, the better your judgement was.
+        </p>
+      </div>
     </div>
   );
 }

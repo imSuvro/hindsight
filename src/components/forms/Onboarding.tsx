@@ -17,8 +17,19 @@ import styles from "./Onboarding.module.css";
  * The zone is read from the browser and shown for confirmation rather than
  * saved silently. A reminder arriving on the wrong day is exactly the kind of
  * small betrayal that makes people stop trusting a tool.
+ *
+ * The panel stays until it is dismissed, which means it can outlive the first
+ * decision. It therefore has to know whether any exist: the audit found it
+ * reading "Write my first decision" directly beneath a heading that said "3
+ * decisions recorded", which is the fastest way to look unfinished.
  */
-export function Onboarding({ storedTimeZone }: { storedTimeZone: string }) {
+export function Onboarding({
+  storedTimeZone,
+  hasDecisions = false,
+}: {
+  storedTimeZone: string;
+  hasDecisions?: boolean;
+}) {
   const detected = useBrowserTimeZone();
   const [pending, startTransition] = useTransition();
 
@@ -27,9 +38,9 @@ export function Onboarding({ storedTimeZone }: { storedTimeZone: string }) {
 
   return (
     <section className={styles.panel} aria-labelledby="onboarding-heading">
-      <p className={styles.tag}>Start here</p>
+      <p className={styles.tag}>{hasDecisions ? "The loop" : "Start here"}</p>
       <h2 id="onboarding-heading" className={styles.title}>
-        Three steps, then arithmetic
+        {hasDecisions ? "How the rest of it works" : "Three steps, then arithmetic"}
       </h2>
 
       <ol className={styles.steps}>
@@ -52,8 +63,8 @@ export function Onboarding({ storedTimeZone }: { storedTimeZone: string }) {
         <p className={styles.zoneValue}>{zone}</p>
         {mismatch && (
           <p className={styles.zoneNote}>
-            Your browser says {detected}, which is different from what is saved.
-            Confirming will use the browser&rsquo;s.
+            Your browser is set to {detected}. Confirm to use that instead — you can
+            change it any time in Settings.
           </p>
         )}
       </div>
@@ -68,7 +79,7 @@ export function Onboarding({ storedTimeZone }: { storedTimeZone: string }) {
             });
           }}
         >
-          Write my first decision
+          {hasDecisions ? "Record another" : "Record a decision"}
         </Link>
         <button
           type="button"
@@ -80,11 +91,13 @@ export function Onboarding({ storedTimeZone }: { storedTimeZone: string }) {
             });
           }}
         >
-          {pending ? "Saving…" : "Got it — hide this"}
+          {pending ? "Saving…" : hasDecisions ? "Hide this" : "Got it — hide this"}
         </button>
-        <Link href="/demo" className={styles.quiet}>
-          See a finished journal first
-        </Link>
+        {!hasDecisions && (
+          <Link href="/demo" className={styles.quiet}>
+            See a finished journal first
+          </Link>
+        )}
       </div>
     </section>
   );

@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  max-width: 40rem;
+  max-width: var(--measure-wide);
 }
 
 .verdictHeadline {
@@ -28,11 +28,11 @@
 }
 
 .verdictOver {
-  color: var(--belief);
+  color: var(--belief-ink);
 }
 
 .verdictUnder {
-  color: var(--reality);
+  color: var(--reality-ink);
 }
 
 .verdictBody {
@@ -157,15 +157,49 @@
 
 /* ----------------------------------------------------------- locked state */
 
+/*
+ * Below the display threshold. The copy explains why there is no reading yet;
+ * the frame beside it shows the instrument that will carry one.
+ *
+ * The old rule here was `max-width: 34rem`, which is what made this card run
+ * half the width of the list below it — the audit's second finding. Width is
+ * now the container's decision, per DESIGN.md § Layout.
+ */
 .locked {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  padding: var(--space-6);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  width: 100%;
+}
+
+@media (min-width: 56rem) {
+  .locked {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+    align-items: start;
+    gap: var(--space-7);
+  }
+}
+
+.lockedCopy {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  padding: var(--space-6);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  background: var(--surface);
-  max-width: 34rem;
+  min-width: 0;
+}
+
+.lockedFrame {
+  min-width: 0;
+}
+
+.lockedFrameNote {
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+  line-height: var(--leading-normal);
 }
 
 .lockedTitle {

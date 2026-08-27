@@ -1,32 +1,39 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Newsreader, Spline_Sans_Mono } from "next/font/google";
+import { Fraunces, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { headers } from "next/headers";
 import { siteUrl } from "@/lib/schemas/env";
 import "./globals.css";
 
 /**
- * Three faces, three jobs. Newsreader carries the journal voice — your own
- * words about your own decisions. Archivo runs the interface. Spline Sans Mono
- * holds the numbers, which are the product, and keeps its columns while doing
- * it.
+ * Three faces, three jobs — see DESIGN.md § Type.
+ *
+ * Fraunces carries the journal voice: your own words about your own decisions,
+ * and every heading. IBM Plex Sans runs the interface, engineered for technical
+ * reading without being anonymous about it. IBM Plex Mono holds the numbers,
+ * which are the product, and keeps its columns while doing it.
+ *
+ * All three load with `display: "swap"`, and the fallback stacks are chosen for
+ * similar metrics so the swap does not shift layout.
  */
-const newsreader = Newsreader({
+const fraunces = Fraunces({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-newsreader",
-  axes: ["opsz"],
+  variable: "--font-fraunces",
+  axes: ["SOFT", "WONK", "opsz"],
 });
 
-const archivo = Archivo({
+const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-archivo",
+  variable: "--font-plex-sans",
+  weight: ["400", "500", "600"],
 });
 
-const splineSansMono = Spline_Sans_Mono({
+const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-spline-mono",
+  variable: "--font-plex-mono",
+  weight: ["400", "500"],
 });
 
 const SITE_URL = siteUrl();
@@ -69,7 +76,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${newsreader.variable} ${archivo.variable} ${splineSansMono.variable}`}
+      className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}
     >
       <body>
         <a className="skip-link" href="#main">

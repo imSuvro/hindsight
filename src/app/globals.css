@@ -1,71 +1,67 @@
 /*
- * Hindsight design tokens.
+ * Hindsight design tokens — the Meridian system.
  *
- * The product takes a reading of your judgement, so it is built to look like an
- * instrument rather than an app: porcelain-cool surfaces, hairline rules that
- * mark real structural boundaries, and numbers set in a face that keeps its
- * columns.
+ * DESIGN.md is the specification; this file is its only implementation. Every
+ * value here appears there with its reasoning, and `scripts/palette-check.mjs`
+ * recomputes every contrast, colour-blindness and chroma claim from these hex
+ * values on each CI run.
  *
- * Two accent colours carry meaning and are never used decoratively:
+ * The concept is celestial navigation: you take a sighting with an instrument,
+ * commit it to the log, and the true position arrives later. Two accents carry
+ * meaning and are never used decoratively:
  *
- *   --belief   (warm brass)  what you said would happen
- *   --reality  (cool teal)   what actually happened
+ *   --belief   (sighting brass)  what you said would happen
+ *   --reality  (sea cyan)        what actually happened
  *
- * On the reliability diagram they converge on the diagonal when you are well
- * calibrated, and the distance between them is the finding. Every place they
- * appear, they mean the same two things.
+ * On the reliability diagram they converge on --horizon, the perfect-
+ * calibration diagonal, when you are well calibrated. The distance between
+ * them is the finding. Every place they appear, they mean the same two things.
+ *
+ * Two bars, never one: a colour used as a MARK clears 3:1 against its surface;
+ * the same colour used for WORDS clears 4.5:1. That is why --belief and
+ * --belief-ink are different values. Never set text in --belief.
  */
 
 :root {
   color-scheme: light;
 
-  /* Surfaces */
-  --ground: #f2f4f3;
-  --surface: #fbfcfb;
-  --surface-sunk: #eaeeec;
-  --surface-hover: #f5f7f6;
+  /* Surfaces — cool chart paper. Never white, never cream. */
+  --ground: #eef1f5;
+  --surface: #f8fafc;
+  --surface-sunk: #e3e8ef;
+  --surface-hover: #f1f4f8;
 
   /* Ink */
-  --ink: #12181b;
-  --ink-soft: #55636b;
-  /* 5.1:1 on --surface, 4.8:1 on --ground. Labels and captions are small text
-     and still have to clear WCAG AA; the lighter grey this replaced managed
-     only 2.9:1, which the accessibility scan caught. */
-  --ink-faint: #5f6e75;
-  --ink-inverse: #fbfcfb;
+  --ink: #10151f;
+  --ink-soft: #4a5566;
+  --ink-faint: #5b6675;
+  --ink-inverse: #f8fafc;
 
   /* Structure */
-  --rule: #d9dfdd;
-  --rule-strong: #c2cbc8;
+  --rule: #d7dde6;
+  --rule-strong: #bcc5d1;
 
-  /*
-   * Meaning. These two are data colours and were chosen by running the
-   * palette validator rather than by eye: both clear the OKLCH chroma floor,
-   * separate by ΔE 18 under protanopia and 22 with normal vision, and hold
-   * 3:1 against the surface. Dark mode is stepped separately against the dark
-   * surface, not flipped.
-   */
-  --belief: #a5661f;
-  --belief-bright: #c8873c;
-  --belief-wash: #f5e9da;
-  /* Small text in the belief colour needs 4.5:1, which the data-mark value does
-     not reach on the wash. Marks and words are held to different bars, so they
-     get different tokens rather than one compromise between them. */
-  --belief-ink: #8a5417;
-  --reality: #0074a0;
-  --reality-bright: #2b90ba;
-  --reality-wash: #ddedf4;
-  /* Chart furniture, not a series: identified by its label, never by hue.
-     Held to the 3:1 bar for non-text graphics rather than the text bar. */
-  --reference: #79878e;
-  --danger: #8f3626;
-  --danger-wash: #f6e3df;
+  /* Meaning. Derived by search against the validator, not by eye:
+     25.0 dE apart, 19.1 under protanopia, 25.5 under deuteranopia. */
+  --belief: #b06412;
+  --belief-ink: #9d570f;
+  --belief-wash: #f7ecdf;
+  --reality: #005f7d;
+  --reality-ink: #005f7d;
+  --reality-wash: #ddeef4;
+
+  /* The horizon: chart furniture, identified by its label, never by hue.
+     Held to the 3:1 non-text bar rather than the text bar. */
+  --horizon: #6b7684;
+
+  --danger: #8f3226;
+  --danger-wash: #f7e4e0;
 
   /* Type */
-  --font-display: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
   --font-body:
-    var(--font-archivo), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: var(--font-spline-mono), ui-monospace, "SF Mono", Menlo, monospace;
+    var(--font-plex-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
 
   --text-2xs: 0.6875rem;
   --text-xs: 0.75rem;
@@ -76,6 +72,7 @@
   --text-xl: 1.875rem;
   --text-2xl: 2.5rem;
   --text-3xl: 3.25rem;
+  --text-4xl: 4.25rem;
 
   --leading-tight: 1.12;
   --leading-snug: 1.32;
@@ -94,42 +91,57 @@
   --space-9: 6rem;
 
   /* Instruments have small radii and tight shadows. */
-  --radius: 3px;
-  --radius-lg: 5px;
-  --shadow-raised: 0 1px 2px rgb(18 24 27 / 6%), 0 4px 16px rgb(18 24 27 / 4%);
-  --shadow-lifted: 0 2px 4px rgb(18 24 27 / 8%), 0 12px 32px rgb(18 24 27 / 8%);
+  --radius: 4px;
+  --radius-lg: 8px;
+  --radius-full: 999px;
+  --shadow-raised: 0 1px 2px rgb(16 21 31 / 6%), 0 4px 16px rgb(16 21 31 / 4%);
+  --shadow-lifted: 0 2px 4px rgb(16 21 31 / 8%), 0 12px 32px rgb(16 21 31 / 8%);
 
+  /* Motion. Instruments settle; they do not bounce. */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms;
+  --duration: 200ms;
+  --duration-slow: 420ms;
+  --duration-seal: 900ms;
+
+  /* Measures. Every content width comes from this scale so that columns on
+     different screens line up rather than each picking their own number. */
+  --measure-tight: 22rem;
+  --measure-narrow: 26rem;
   --measure: 34rem;
-  --page-max: 68rem;
+  --measure-prose: 38rem;
+  --measure-wide: 44rem;
+  --page-max: 72rem;
+  --rail: 19rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
 
-    --ground: #0e1416;
-    --surface: #161e21;
-    --surface-sunk: #0a0f11;
-    --surface-hover: #1c2528;
+    /* Night watch. Stepped against the dark ground, never flipped. */
+    --ground: #0b1020;
+    --surface: #141b2e;
+    --surface-sunk: #070b16;
+    --surface-hover: #1b2338;
 
-    --ink: #e7edec;
-    --ink-soft: #9dabb0;
-    /* 5.8:1 on --surface, 6.3:1 on --ground. */
-    --ink-faint: #8b999f;
-    --ink-inverse: #0e1416;
+    --ink: #e8ecf5;
+    --ink-soft: #a3aec2;
+    --ink-faint: #8e99ad;
+    --ink-inverse: #0b1020;
 
-    --rule: #253135;
-    --rule-strong: #35454a;
+    --rule: #232c42;
+    --rule-strong: #35405c;
 
-    --belief: #bd8438;
-    --belief-bright: #d69f56;
-    --belief-wash: #2b2116;
-    --belief-ink: #cf9a52;
-    --reality: #2e97c4;
-    --reality-bright: #52aed6;
-    --reality-wash: #102630;
-    --reference: #5b6c73;
-    --danger: #d4705e;
+    --belief: #eaa53a;
+    --belief-ink: #eaa53a;
+    --belief-wash: #2a2113;
+    --reality: #38c4e2;
+    --reality-ink: #38c4e2;
+    --reality-wash: #0c2630;
+    --horizon: #6d7a90;
+
+    --danger: #e08272;
     --danger-wash: #2e1a16;
 
     --shadow-raised: 0 1px 2px rgb(0 0 0 / 40%), 0 4px 16px rgb(0 0 0 / 24%);
@@ -226,11 +238,22 @@ svg {
 }
 
 /*
+ * `hidden` must actually hide. The attribute's UA rule is `display: none` at
+ * the lowest possible specificity, so any component rule that sets `display`
+ * silently defeats it — which is what left the whole editable form on screen
+ * above the "This is what gets sealed" panel, with the confirmation step
+ * failing to isolate the one irreversible moment in the product.
+ */
+[hidden] {
+  display: none !important;
+}
+
+/*
  * A focus ring you can actually see, on every surface, without the browser
  * default's habit of vanishing against dark backgrounds.
  */
 :focus-visible {
-  outline: 2px solid var(--reality-bright);
+  outline: 2px solid var(--reality);
   outline-offset: 2px;
   border-radius: 2px;
 }

@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: var(--space-3);
   width: 100%;
-  max-width: 22rem;
+  max-width: var(--measure-tight);
 }
 
 .provider {
@@ -48,7 +48,7 @@
 }
 
 .unavailable {
-  max-width: 26rem;
+  max-width: var(--measure-narrow);
   padding: var(--space-4);
   border: 1px dashed var(--rule-strong);
   border-radius: var(--radius);

@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-08-28
+
+The interface, rebuilt on a design system that is written down and enforced.
+
+### Added
+
+- **The Meridian design system** ([`DESIGN.md`](DESIGN.md)). Celestial
+  navigation: you take a sighting, commit it, and the true position arrives
+  later. The perfect-calibration diagonal is now named — the horizon — and is
+  the signature element.
+- **An instrument rail** on the dashboard and review screens, carrying the
+  current reading alongside the work. Both screens previously stranded their
+  content in the top-left quadrant of a wide viewport.
+- **The reliability diagram's empty frame.** Below the display threshold the
+  dashboard draws the instrument with nothing on it, rather than a paragraph
+  explaining its absence. No data is plotted, so the thresholds in
+  `docs/calibration.md` are untouched.
+- **`scripts/palette-check.mjs`**, which recomputes every contrast,
+  colour-blindness and chroma claim in `DESIGN.md` from the hex values, and
+  fails the build if any component sets text in a data-mark colour. Runs in CI.
+- Surface primitives (`Card`, `EmptyState`, `RailPanel`, `Skeleton`), a width
+  scale, and a danger button variant.
+- End-to-end coverage for the second half of the core loop — reading a due
+  decision and recording what happened — which had none, because review dates
+  are forward-only and nothing can become due inside a test run.
+- Per-route smoke tests, a horizontal-overflow guard, and fifteen edge-case
+  probes over injection, unicode, boundaries, unknown ids and the CSV guard.
+
+### Changed
+
+- Type is now Fraunces, IBM Plex Sans and IBM Plex Mono.
+- The onboarding panel adapts to whether decisions exist. It could previously
+  read "Write my first decision" directly beneath "3 decisions recorded".
+- The timezone line reads as a confirmation with an escape hatch rather than a
+  discrepancy to resolve.
+- One name per action: "Record a decision" throughout, "Start a journal" for
+  signed-out calls to action.
+- The domain table no longer renders five rows of zeroes before anything has
+  been answered.
+
+### Fixed
+
+- `hidden` now actually hides. Its user-agent rule sits at the lowest possible
+  specificity, so a component setting `display` defeated it — which left the
+  whole editable form on screen above "This is what gets sealed", the one
+  irreversible moment in the product.
+- Text is no longer set in `--belief` or `--reality`. Those are tuned to the
+  3:1 bar that graphics clear, not the 4.5:1 bar that words clear; seven files
+  were relying on the old palette happening to clear both.
+- "Review before locking" now names the field that is still missing. A disabled
+  control with no stated reason is a dead end, and a screen reader announces
+  only "dimmed".
+- An entirely empty review queue no longer stacks two empty states at two
+  different widths.
+
 ## [0.3.0] — 2026-08-27
 
 ### Added
@@ -107,7 +162,8 @@ timing is approximate; the hash chain detects tampering rather than preventing
 it, and cannot detect truncation of the newest entries without an external
 witness.
 
-[unreleased]: https://github.com/imSuvro/hindsight/compare/v0.3.0...HEAD
+[unreleased]: https://github.com/imSuvro/hindsight/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/imSuvro/hindsight/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/imSuvro/hindsight/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/imSuvro/hindsight/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/imSuvro/hindsight/releases/tag/v0.1.0

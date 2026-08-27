@@ -35,24 +35,33 @@ run can ever reach a real inbox or consume quota.
 
 **Why both are implemented, not just Brevo.** The reasoning below still holds —
 Brevo's daily-cap-only free tier has more headroom than SMTP2GO's 25/hour
-unverified-sender limit, so Brevo is the one to reach for first. But this is
-a two-person-team's worth of external dependency (an account on a vendor
-neither of us runs), and vendor dashboards go down or get flaky exactly when
-you're mid-setup and least able to wait. `Smtp2goTransport` in
-`src/lib/email/transport.ts` exists so that a flaky Brevo signup doesn't block
-getting a deployment fully working — flip `EMAIL_MODE` and move on.
+unverified-sender limit, so Brevo is the one to reach for first. `Smtp2goTransport`
+in `src/lib/email/transport.ts` was added so that a flaky Brevo dashboard
+wouldn't block getting a deployment fully working — flip `EMAIL_MODE` and move
+on, no code change needed.
+
+**In practice, SMTP2GO turned out not to be that escape hatch.** Signing up
+live (2026-08-27) hit a hard wall the earlier research missed: SMTP2GO's
+account **signup form** rejects free-mail addresses outright ("Please use an
+email at your own domain to sign up"). That is a different check from sender
+verification — it gates creating the account at all, before a sender address
+ever comes into it. Someone without a personal domain cannot open a SMTP2GO
+account, full stop. The transport code stays, because it is correct and a
+domain owner can use it today, but the operator playbook now recommends going
+back to Brevo (or waiting out its dashboard glitch) rather than treating
+SMTP2GO as a guaranteed fallback.
 
 ## Options considered
 
-| Provider                  | Free tier                     | Works without a domain?                                                                      | Verdict           |
-| ------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------- | ----------------- |
-| **Brevo**                 | 300 sends/day, no monthly cap | **Yes** — verify one sender address by emailed code                                          | **Chosen**        |
-| SMTP2GO                   | 1,000/month, 200/day, 25/hour | Yes — single-sender verification is documented                                               | Close second      |
-| Resend                    | 3,000/month, 100/day          | **No** — without a verified domain it will only send to your own address                     | Rejected          |
-| MailerSend                | 500/month                     | No — sending domains are DNS-verified                                                        | Rejected          |
-| Postmark                  | 100/month                     | Effectively no, and 100/month is ~3/day                                                      | Rejected          |
-| Mailtrap                  | —                             | No — demo domain sends only to the registered address                                        | Rejected          |
-| Gmail SMTP via Nodemailer | —                             | Violates Google's terms for application sending and risks the account the project depends on | Rejected outright |
+| Provider                  | Free tier                     | Works without a domain?                                                                                                                                                                                                                                                                                     | Verdict                                          |
+| ------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| **Brevo**                 | 300 sends/day, no monthly cap | **Yes** — verify one sender address by emailed code                                                                                                                                                                                                                                                         | **Chosen**                                       |
+| SMTP2GO                   | 1,000/month, 200/day, 25/hour | Sender verification is domain-free, but account **signup itself is not**: the signup form rejects free-mail addresses (`gmail.com` etc.) outright with "Please use an email at your own domain to sign up" (confirmed live, 2026-08-27). Only usable if the operator already owns a domain to sign up with. | Close second in theory, blocked without a domain |
+| Resend                    | 3,000/month, 100/day          | **No** — without a verified domain it will only send to your own address                                                                                                                                                                                                                                    | Rejected                                         |
+| MailerSend                | 500/month                     | No — sending domains are DNS-verified                                                                                                                                                                                                                                                                       | Rejected                                         |
+| Postmark                  | 100/month                     | Effectively no, and 100/month is ~3/day                                                                                                                                                                                                                                                                     | Rejected                                         |
+| Mailtrap                  | —                             | No — demo domain sends only to the registered address                                                                                                                                                                                                                                                       | Rejected                                         |
+| Gmail SMTP via Nodemailer | —                             | Violates Google's terms for application sending and risks the account the project depends on                                                                                                                                                                                                                | Rejected outright                                |
 
 Brevo over SMTP2GO on headroom: 300/day with no monthly ceiling absorbs a burst
 of due reminders, whereas SMTP2GO's 25/hour unverified-sender cap would throttle

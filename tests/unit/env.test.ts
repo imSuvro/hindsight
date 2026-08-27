@@ -30,6 +30,7 @@ const KEYS = [
   "GITHUB_CLIENT_SECRET",
   "EMAIL_MODE",
   "BREVO_API_KEY",
+  "SMTP2GO_API_KEY",
   "VERCEL_URL",
   "VERCEL_PROJECT_PRODUCTION_URL",
 ] as const;
@@ -141,6 +142,16 @@ describe("partial configuration", () => {
     process.env.BREVO_API_KEY = "xkeysib-example";
     resetEnvCache();
     expect(features().email).toBe("brevo");
+  });
+
+  it("supports smtp2go as an alternate transport, same rule", () => {
+    process.env.EMAIL_MODE = "smtp2go";
+    resetEnvCache();
+    expect(features().email).toBe("log");
+
+    process.env.SMTP2GO_API_KEY = "api-example";
+    resetEnvCache();
+    expect(features().email).toBe("smtp2go");
   });
 
   it("treats a variable set to whitespace as absent", () => {

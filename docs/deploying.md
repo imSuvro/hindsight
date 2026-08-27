@@ -121,14 +121,10 @@ page. With neither configured, nobody can sign in.
 
 ---
 
-## 4. Email — Brevo or SMTP2GO — review emails
+## 4. Email — Brevo (primary) — review emails
 
-**operator.** Pick one. Both are free, both work without owning a domain, both
-plug into the same `EMAIL_MODE` switch — see [ADR-0005](adr/0005-email-provider.md)
-for the trade-off. Brevo is the one to reach for first (higher headroom); use
-SMTP2GO if Brevo's dashboard is down or being uncooperative.
-
-### Option A: Brevo
+**operator.** Brevo is the one to use if you're signing up with a free-mail
+address (Gmail etc.), which is the common case for a personal project.
 
 1. Create a free account at [brevo.com](https://www.brevo.com). The free tier is
    300 sends a day with no monthly cap.
@@ -137,19 +133,24 @@ SMTP2GO if Brevo's dashboard is down or being uncooperative.
 3. **SMTP & API → API Keys** → create a v3 key.
 4. Set `EMAIL_MODE=brevo` and `BREVO_API_KEY`.
 
+If Brevo's dashboard is glitchy (a known intermittent issue: the account/org
+switcher screen can get stuck blank), try `app.brevo.com` directly rather than
+the account-switcher URL, or retry in an incognito window — it is a page-render
+issue, not an account problem.
+
 Expect the visible sender to be rewritten to something like
 `hindsight@5000001.brevosend.com`. Brevo does that because it cannot authenticate
 a free-mail domain, and an address it _can_ authenticate is worth more than a
 pretty one. The messages carry a friendly display name and a real Reply-To.
 
-### Option B: SMTP2GO
+### Alternative: SMTP2GO — only if you own a domain
 
-1. Create a free account at [smtp2go.com](https://www.smtp2go.com). The free
-   tier is 1,000 sends a month, 200/day, 25/hour for an unverified sender.
-2. **Settings → Sender Domains/Senders** → verify the single address you want
-   mail to come from (email code, no domain needed).
-3. **API Keys** → create one.
-4. Set `EMAIL_MODE=smtp2go` and `SMTP2GO_API_KEY`.
+`EMAIL_MODE=smtp2go` / `SMTP2GO_API_KEY` is implemented and works, but SMTP2GO's
+**account signup form rejects free-mail addresses** ("Please use an email at
+your own domain to sign up") — confirmed live, 2026-08-27. This blocks account
+creation itself, before sender verification is even reached. Only worth trying
+if you're signing up with an address at a domain you own. See
+[ADR-0005](adr/0005-email-provider.md) for the full history.
 
 To check the wiring without waiting for a real review, set `EMAIL_MODE=log` and
 watch the runtime logs — the message is printed instead of sent.

@@ -78,7 +78,7 @@
 }
 
 .referenceLine {
-  stroke: var(--reference);
+  stroke: var(--horizon);
   stroke-width: 1.5;
   stroke-dasharray: 5 4;
   fill: none;
@@ -198,7 +198,7 @@
 .mark:focus-visible .pointOver,
 .mark:focus-visible .pointUnder,
 .mark:focus-visible .pointEven {
-  stroke: var(--reality-bright);
+  stroke: var(--reality);
   stroke-width: 3;
 }
 
@@ -240,7 +240,7 @@
 /* -------------------------------------------------------------- annotation */
 
 .annotation {
-  max-width: 26rem;
+  max-width: var(--measure-narrow);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
   color: var(--ink-soft);

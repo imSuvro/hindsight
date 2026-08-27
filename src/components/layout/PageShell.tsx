@@ -31,6 +31,12 @@ export type PageShellProps = {
   identity?: { name: string; image: string | null };
   sample?: boolean;
   chainHead?: { seq: number; hash: string } | null;
+  /**
+   * The instrument rail — the current reading, alongside the work. Supplying
+   * it switches the page onto the two-column chart layout; omitting it leaves
+   * a single column. See DESIGN.md § Layout.
+   */
+  rail?: ReactNode;
 };
 
 function initials(name: string): string {
@@ -49,6 +55,7 @@ export function PageShell({
   identity,
   sample = false,
   chainHead = null,
+  rail,
 }: PageShellProps) {
   return (
     <div className={styles.shell}>
@@ -127,7 +134,16 @@ export function PageShell({
             {actions}
           </div>
         )}
-        {children}
+        {rail ? (
+          <div className={styles.withRail}>
+            <div className={styles.column}>{children}</div>
+            <aside className={styles.rail} aria-label="Current reading">
+              {rail}
+            </aside>
+          </div>
+        ) : (
+          children
+        )}
       </main>
 
       <footer className={styles.footer}>

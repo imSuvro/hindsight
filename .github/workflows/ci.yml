@@ -39,6 +39,11 @@ jobs:
         run: pnpm lint --max-warnings=0
       - name: Check formatting
         run: pnpm format:check
+      - name: Validate the palette
+        # DESIGN.md states contrast, colour-blindness and chroma figures. This
+        # recomputes every one of them from the hex values, so the document
+        # cannot drift from the tokens it describes.
+        run: node scripts/palette-check.mjs
       - name: Refuse committed environment files
         run: |
           tracked=$(git ls-files | grep -E '(^|/)\.env($|\.)' | grep -v '\.env\.example$' || true)

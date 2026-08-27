@@ -50,6 +50,17 @@ export type ReliabilityDiagramProps = {
   insight?: CalibrationInsight | null;
   /** Used for the accessible description and the table caption. */
   scoredCount: number;
+  /**
+   * `"frame"` draws the instrument with no reading in it: axes, grid and the
+   * perfect-calibration diagonal, and nothing plotted.
+   *
+   * This is what a journal below the display threshold shows. It is not a
+   * preview and not a faded estimate — there is no data on it at all, which
+   * keeps the thresholds in `docs/calibration.md` intact while still letting a
+   * new user see the instrument they are filling. The legend and the numbers
+   * table are omitted because both would describe marks that are not there.
+   */
+  variant?: "full" | "frame";
 };
 
 const x = (value: number) => PAD_LEFT + value * PLOT;
@@ -86,7 +97,9 @@ export function ReliabilityDiagram({
   bins,
   insight,
   scoredCount,
+  variant = "full",
 }: ReliabilityDiagramProps) {
+  const isFrame = variant === "frame";
   const largest = bins.reduce((max, bin) => Math.max(max, bin.count), 0);
   const ticks = [0, 0.25, 0.5, 0.75, 1];
 
@@ -97,7 +110,11 @@ export function ReliabilityDiagram({
           className={styles.plot}
           viewBox={`0 0 ${SIZE} ${SIZE}`}
           role="img"
-          aria-label={`Reliability diagram of ${scoredCount} resolved decisions, grouped into ${bins.length} confidence bands. The numbers behind it are in the table below.`}
+          aria-label={
+            isFrame
+              ? "An empty reliability diagram. What you said runs along the bottom, what happened runs up the side, and the dashed diagonal marks perfect calibration. Nothing is plotted yet."
+              : `Reliability diagram of ${scoredCount} resolved decisions, grouped into ${bins.length} confidence bands. The numbers behind it are in the table below.`
+          }
         >
           {ticks.map((tick) => (
             <g key={`grid-${tick}`}>
@@ -166,7 +183,7 @@ export function ReliabilityDiagram({
             What happened
           </text>
 
-          {bins.map((bin) => {
+          {(isFrame ? [] : bins).map((bin) => {
             const direction = directionOf(bin);
             const cx = x(bin.meanForecast);
             const cy = y(bin.observedFrequency);
@@ -283,31 +300,33 @@ export function ReliabilityDiagram({
         </svg>
       </div>
 
-      <ul className={styles.legendList}>
-        <li className={styles.legendItem}>
-          <svg className={styles.legendSwatch} viewBox="0 0 18 10" aria-hidden="true">
-            <line className={styles.gapOver} x1="0" y1="5" x2="18" y2="5" />
-            <circle className={styles.pointOver} cx="9" cy="5" r="4" />
-          </svg>
-          More confident than it turned out
-        </li>
-        <li className={styles.legendItem}>
-          <svg className={styles.legendSwatch} viewBox="0 0 18 10" aria-hidden="true">
-            <line className={styles.gapUnder} x1="0" y1="5" x2="18" y2="5" />
-            <circle className={styles.pointUnder} cx="9" cy="5" r="4" />
-          </svg>
-          Less confident than it turned out
-        </li>
-        <li className={styles.legendItem}>
-          <svg className={styles.legendSwatch} viewBox="0 0 18 10" aria-hidden="true">
-            <line className={styles.referenceLine} x1="0" y1="5" x2="18" y2="5" />
-          </svg>
-          Perfect calibration
-        </li>
-        <li className={styles.legendItem}>Point size shows how many decisions</li>
-      </ul>
+      {!isFrame && (
+        <ul className={styles.legendList}>
+          <li className={styles.legendItem}>
+            <svg className={styles.legendSwatch} viewBox="0 0 18 10" aria-hidden="true">
+              <line className={styles.gapOver} x1="0" y1="5" x2="18" y2="5" />
+              <circle className={styles.pointOver} cx="9" cy="5" r="4" />
+            </svg>
+            More confident than it turned out
+          </li>
+          <li className={styles.legendItem}>
+            <svg className={styles.legendSwatch} viewBox="0 0 18 10" aria-hidden="true">
+              <line className={styles.gapUnder} x1="0" y1="5" x2="18" y2="5" />
+              <circle className={styles.pointUnder} cx="9" cy="5" r="4" />
+            </svg>
+            Less confident than it turned out
+          </li>
+          <li className={styles.legendItem}>
+            <svg className={styles.legendSwatch} viewBox="0 0 18 10" aria-hidden="true">
+              <line className={styles.referenceLine} x1="0" y1="5" x2="18" y2="5" />
+            </svg>
+            Perfect calibration
+          </li>
+          <li className={styles.legendItem}>Point size shows how many decisions</li>
+        </ul>
+      )}
 
-      {insight ? (
+      {isFrame ? null : insight ? (
         <p className={styles.annotation}>
           <span className={styles.annotationStrong}>
             When you said{" "}
@@ -329,52 +348,54 @@ export function ReliabilityDiagram({
         </p>
       )}
 
-      <details className={styles.tableToggle}>
-        <summary>Show the numbers</summary>
-        <table className={styles.table}>
-          <caption>
-            Each row is one point on the diagram, built from {scoredCount} resolved
-            decisions.
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">You said</th>
-              <th scope="col">It happened</th>
-              <th scope="col">Decisions</th>
-              <th scope="col">Plausible range</th>
-              <th scope="col">Reading</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bins.map((bin) => {
-              const direction = directionOf(bin);
-              return (
-                <tr key={bin.index}>
-                  <td>
-                    {bin.lowerConfidence === bin.upperConfidence
-                      ? `${bin.lowerConfidence}%`
-                      : `${bin.lowerConfidence}–${bin.upperConfidence}%`}
-                  </td>
-                  <td>{percent(bin.observedFrequency)}</td>
-                  <td>
-                    {bin.occurred} of {bin.count}
-                  </td>
-                  <td>
-                    {percent(bin.interval.lower)}–{percent(bin.interval.upper)}
-                  </td>
-                  <td className={styles.tableTextCell}>
-                    {direction === "over"
-                      ? "More confident than it turned out"
-                      : direction === "under"
-                        ? "Less confident than it turned out"
-                        : "On the line"}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </details>
+      {!isFrame && (
+        <details className={styles.tableToggle}>
+          <summary>Show the numbers</summary>
+          <table className={styles.table}>
+            <caption>
+              Each row is one point on the diagram, built from {scoredCount} resolved
+              decisions.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">You said</th>
+                <th scope="col">It happened</th>
+                <th scope="col">Decisions</th>
+                <th scope="col">Plausible range</th>
+                <th scope="col">Reading</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bins.map((bin) => {
+                const direction = directionOf(bin);
+                return (
+                  <tr key={bin.index}>
+                    <td>
+                      {bin.lowerConfidence === bin.upperConfidence
+                        ? `${bin.lowerConfidence}%`
+                        : `${bin.lowerConfidence}–${bin.upperConfidence}%`}
+                    </td>
+                    <td>{percent(bin.observedFrequency)}</td>
+                    <td>
+                      {bin.occurred} of {bin.count}
+                    </td>
+                    <td>
+                      {percent(bin.interval.lower)}–{percent(bin.interval.upper)}
+                    </td>
+                    <td className={styles.tableTextCell}>
+                      {direction === "over"
+                        ? "More confident than it turned out"
+                        : direction === "under"
+                          ? "Less confident than it turned out"
+                          : "On the line"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </details>
+      )}
     </figure>
   );
 }

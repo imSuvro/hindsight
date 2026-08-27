@@ -41,7 +41,7 @@ export default function DemoPage() {
       lead="Twenty-eight decisions belonging to nobody, so you can see what the arithmetic looks like before you have any of your own."
       actions={
         <Link href="/sign-in" className={styles.startAction}>
-          Start your own
+          Start a journal
         </Link>
       }
     >

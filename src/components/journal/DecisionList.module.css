@@ -46,7 +46,7 @@
 }
 
 .statusDue {
-  color: var(--belief);
+  color: var(--belief-ink);
 }
 
 .statusResolved {
@@ -86,7 +86,7 @@
   font-size: var(--text-lg);
   letter-spacing: -0.03em;
   line-height: 1;
-  color: var(--belief);
+  color: var(--belief-ink);
 }
 
 .confidenceTrack {
@@ -108,7 +108,7 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  border: 1.5px solid var(--reference);
+  border: 1.5px solid var(--horizon);
 }
 
 .outcomeHappened {
@@ -122,8 +122,8 @@
 }
 
 .outcomeUnresolvable {
-  background: var(--reference);
-  border-color: var(--reference);
+  background: var(--horizon);
+  border-color: var(--horizon);
   border-radius: 1px;
 }
 
@@ -139,13 +139,15 @@
 
 .empty {
   padding: var(--space-6);
+  border-radius: var(--radius-lg);
   background: var(--surface);
   border: 1px dashed var(--rule-strong);
   border-radius: var(--radius);
   color: var(--ink-soft);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
-  max-width: var(--measure);
+  /* Fills its container, like every other card. DESIGN.md § Layout. */
+  width: 100%;
 }
 
 @media (max-width: 34rem) {

@@ -83,3 +83,46 @@ export async function expectNoAccessibilityViolations(page: Page): Promise<void>
   );
   expect(summary, summary.join("\n\n")).toEqual([]);
 }
+
+/**
+ * Bring a decision's review date forward into the past, so the review flow can
+ * be driven through the interface.
+ *
+ * Review dates are forward-only in the form — correctly, since scheduling a
+ * review for last Tuesday is meaningless. That leaves the second half of the
+ * core loop unreachable in an end-to-end test: nothing can become due inside a
+ * run that lasts seconds.
+ *
+ * This edits the materialised view and *not* the ledger. The ledger is the
+ * record of what the user asserted and must stay untouched by test scaffolding.
+ *
+ * **It therefore makes `/api/ledger/verify` report a `projection` problem, by
+ * design.** `auditRecord` rebuilds the decisions from the chain and diffs them
+ * against what is stored, so a view edited behind the ledger's back is exactly
+ * what it exists to catch — a stronger guarantee than the chain check alone,
+ * and one worth knowing about. Specs using this helper must not assert an
+ * intact record; they assert that no problem is of kind `chain`, which isolates
+ * the claim under test from the fixture's known side effect.
+ */
+export async function makeDue(decisionId: string): Promise<void> {
+  const { MongoClient } = await import("mongodb");
+  const uri = (await import("node:fs")).readFileSync(".e2e/mongo-uri", "utf8").trim();
+  const client = new MongoClient(uri);
+  try {
+    await client.connect();
+    const result = await client
+      .db()
+      .collection("decisions")
+      .updateOne(
+        { _id: decisionId as never },
+        { $set: { reviewAt: Date.now() - 60_000 } },
+      );
+    if (result.matchedCount !== 1) {
+      throw new Error(
+        `makeDue matched ${result.matchedCount} decisions for ${decisionId}`,
+      );
+    }
+  } finally {
+    await client.close();
+  }
+}

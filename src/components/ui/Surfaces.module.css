@@ -1,0 +1,173 @@
+/*
+ * Shared surface primitives. DESIGN.md § Components.
+ *
+ * The audit found card widths chosen ad hoc — a populated list ran the full
+ * column while the empty state beside it ran half of it, so nothing lined up
+ * down the right edge and the page read as assembled rather than designed.
+ * The rule these enforce: a card fills its container, and an empty state fills
+ * the same box a populated one would.
+ */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  width: 100%;
+}
+
+.cardQuiet {
+  composes: card;
+  background: transparent;
+  border-color: var(--rule);
+}
+
+.cardSunk {
+  composes: card;
+  background: var(--surface-sunk);
+  border-color: transparent;
+}
+
+/* ---------------------------------------------------------------- sections */
+
+.sectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 460;
+  letter-spacing: -0.015em;
+}
+
+.sectionNote {
+  font-size: var(--text-sm);
+  color: var(--ink-faint);
+}
+
+/* ------------------------------------------------------------ empty states */
+
+/*
+ * No icon, no shrug, no "No data". A sentence naming what will be here, and
+ * the action that puts it there. Fills its container so it occupies the same
+ * footprint the populated state will.
+ */
+.empty {
+  composes: card;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  border-style: dashed;
+  border-color: var(--rule-strong);
+  background: transparent;
+}
+
+.emptyText {
+  max-width: var(--measure);
+  color: var(--ink-soft);
+  line-height: var(--leading-relaxed);
+}
+
+.emptyTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: var(--space-1);
+}
+
+/* ------------------------------------------------------------------- rail */
+
+.railPanel {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.railLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: var(--space-3);
+}
+
+.railRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-2);
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-sm);
+}
+
+.railRow:first-of-type {
+  border-top: none;
+}
+
+.railValue {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.railNote {
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+  line-height: var(--leading-normal);
+}
+
+/* -------------------------------------------------------------- skeletons */
+
+/*
+ * The shape of the content it replaces. The shimmer is a background sweep
+ * rather than an opacity pulse so it does not read as a flashing element, and
+ * reduced-motion drops it to a flat block.
+ */
+.skeleton {
+  background: var(--surface-sunk);
+  border-radius: var(--radius);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--ink) 5%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: sweep 1.4s var(--ease) infinite;
+}
+
+.skeletonLine {
+  composes: skeleton;
+  height: 1em;
+  margin-block: 0.25em;
+}
+
+@keyframes sweep {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .skeletonLine {
+    animation: none;
+    background-image: none;
+  }
+}

@@ -16,10 +16,13 @@ import { lockDecision, signUp } from "./support";
  */
 
 const PHASE = process.env.AUDIT_PHASE;
+/** `dark` renders every capture under prefers-color-scheme: dark. */
+const SCHEME = process.env.AUDIT_SCHEME === "dark" ? "dark" : "light";
 
 test.describe(() => {
   test.skip(!PHASE, "set AUDIT_PHASE=before|after to capture");
   test.describe.configure({ mode: "serial" });
+  test.use({ colorScheme: SCHEME });
 
   const WIDTHS = [
     { name: "360", width: 360, height: 780 },
@@ -53,7 +56,7 @@ test.describe(() => {
       // Let the layout settle so the shot is not mid-reflow.
       await page.waitForTimeout(350);
       await page.screenshot({
-        path: `design/audit/${PHASE}/${slug}-${size.name}.png`,
+        path: `design/audit/${PHASE}/${slug}-${size.name}${SCHEME === "dark" ? "-dark" : ""}.png`,
         fullPage: true,
       });
     }
@@ -125,7 +128,7 @@ test.describe(() => {
   });
 
   test.afterAll(() => {
-    const path = `design/audit/${PHASE}-console.md`;
+    const path = `design/audit/${PHASE}-console${SCHEME === "dark" ? "-dark" : ""}.md`;
     const lines = [
       `# Console output — ${PHASE} run`,
       "",

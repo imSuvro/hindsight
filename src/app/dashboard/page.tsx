@@ -4,8 +4,10 @@ import { Onboarding } from "@/components/forms/Onboarding";
 import { CalibrationPanel } from "@/components/journal/CalibrationPanel";
 import { DecisionList } from "@/components/journal/DecisionList";
 import { PageShell, SIGNED_IN_NAV } from "@/components/layout/PageShell";
+import { RailPanel, RailRow } from "@/components/ui/Surfaces";
 import { listDecisions } from "@/lib/db/decisions";
 import { buildCalibrationReport } from "@/lib/domain/calibration";
+import { relativeDays } from "@/lib/format";
 import { firstName, greeting, journalContext } from "@/lib/journal-context";
 import { decisionStatus } from "@/lib/schemas/domain";
 import controls from "@/components/ui/controls.module.css";
@@ -30,6 +32,11 @@ export default async function DashboardPage() {
     (decision) => decisionStatus(decision, journal.now) === "due",
   );
   const recent = decisions.slice(0, 5);
+  // The soonest unanswered decision, for the rail. Sorted ascending by review
+  // date so "next" means next, not most recently written.
+  const nextReview = decisions
+    .filter((decision) => decisionStatus(decision, journal.now) === "pending")
+    .sort((a, b) => a.reviewAt - b.reviewAt)[0];
   const showOnboarding = !journal.onboarded || decisions.length === 0;
 
   return (
@@ -49,9 +56,39 @@ export default async function DashboardPage() {
           Record a decision
         </Link>
       }
+      rail={
+        <>
+          <RailPanel
+            label="Your record"
+            note={
+              due.length > 0
+                ? "Answering what is due is what moves the reading."
+                : "The reading sharpens as decisions come back and get answered."
+            }
+          >
+            <RailRow label="Recorded" value={decisions.length} />
+            <RailRow label="Answered" value={report.counts.resolved} />
+            <RailRow label="Waiting" value={decisions.length - report.counts.resolved} />
+            {due.length > 0 && <RailRow label="Due now" value={due.length} />}
+          </RailPanel>
+
+          <RailPanel label="Next review">
+            <p className={styles.railProse}>
+              {nextReview
+                ? `“${nextReview.title}” comes back ${relativeDays(journal.now, nextReview.reviewAt)}.`
+                : "Nothing is scheduled yet. The date you pick when recording is when it comes back."}
+            </p>
+          </RailPanel>
+        </>
+      }
     >
       <div className={styles.sections}>
-        {showOnboarding && <Onboarding storedTimeZone={journal.timeZone} />}
+        {showOnboarding && (
+          <Onboarding
+            storedTimeZone={journal.timeZone}
+            hasDecisions={decisions.length > 0}
+          />
+        )}
 
         {due.length > 0 && (
           <section className={styles.section} aria-labelledby="due-heading">

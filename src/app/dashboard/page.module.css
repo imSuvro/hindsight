@@ -1,7 +1,8 @@
 .sections {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  /* One rhythm between major sections, at every width. DESIGN.md § Space. */
+  gap: var(--space-7);
 }
 
 .section {
@@ -29,6 +30,12 @@
 
 .sectionNote {
   margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  line-height: var(--leading-relaxed);
+}
+
+.railProse {
   font-size: var(--text-sm);
   color: var(--ink-soft);
   line-height: var(--leading-relaxed);

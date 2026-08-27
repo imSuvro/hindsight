@@ -46,7 +46,18 @@
 
 /* ------------------------------------------------------------ sealed state */
 
+/*
+ * The signature moment. DESIGN.md § Motion — the one place in the product that
+ * gets choreography, because it is the one irreversible action in it.
+ *
+ * The horizon hairline sweeps the panel once as the decision seals, the panel
+ * settles up, and the fingerprint resolves last. It runs once per decision and
+ * nowhere else. Under reduced-motion the whole thing becomes a static sealed
+ * state with no movement at all.
+ */
 .sealed {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -56,6 +67,79 @@
   border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow-raised);
+  animation: sealSettle var(--duration-slow) var(--ease) both;
+}
+
+/* The horizon: the same diagonal the diagram is built around, drawn once. */
+.sealed::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--reality) 35%,
+    var(--belief) 65%,
+    transparent 100%
+  );
+  transform-origin: left center;
+  animation: sealSweep var(--duration-seal) var(--ease) both;
+}
+
+@keyframes sealSettle {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sealSweep {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+.sealedHash {
+  animation: sealResolve var(--duration-slow) var(--ease) both;
+  animation-delay: calc(var(--duration-seal) * 0.55);
+}
+
+@keyframes sealResolve {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sealed,
+  .sealed::after,
+  .sealedHash {
+    animation: none;
+  }
+
+  .sealed::after {
+    transform: none;
+    opacity: 1;
+  }
 }
 
 .sealedTag {
@@ -80,6 +164,7 @@
 }
 
 .sealedHash {
+  display: inline-block;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--ink);

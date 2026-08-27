@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { deleteAccount } from "@/lib/auth/account";
 import { collections } from "@/lib/db/collections";
+import { recordPracticeAnswer } from "@/lib/db/practice";
 import { type AppendInput, appendEvent, listChain } from "@/lib/db/ledger";
 import { claimNotification } from "@/lib/db/notifications";
 import { newDecisionId } from "@/lib/ids";
@@ -45,6 +46,19 @@ async function seedIdentity(userId: string): Promise<void> {
   });
 }
 
+async function seedPractice(userId: string, count: number): Promise<void> {
+  for (let index = 0; index < count; index += 1) {
+    await recordPracticeAnswer(harness, {
+      userId,
+      questionId: `population:AAA${index}:BBB${index}`,
+      kind: "population",
+      confidence: 70,
+      correct: index % 2 === 0,
+      at: new Date("2026-02-01T09:00:00Z"),
+    });
+  }
+}
+
 async function seedJournal(userId: string, count: number): Promise<string[]> {
   const ids: string[] = [];
   for (let index = 0; index < count; index += 1) {
@@ -86,6 +100,8 @@ describe("deleteAccount", () => {
     await seedIdentity(theirs);
     await seedJournal(mine, 3);
     await seedJournal(theirs, 2);
+    await seedPractice(mine, 2);
+    await seedPractice(theirs, 4);
 
     const receipt = await deleteAccount(harness, mine);
 
@@ -93,6 +109,7 @@ describe("deleteAccount", () => {
       ledgerEntries: 3,
       decisions: 3,
       notifications: 3,
+      practiceAnswers: 2,
       sessions: 1,
       linkedAccounts: 1,
     });
@@ -101,6 +118,7 @@ describe("deleteAccount", () => {
     expect(await own.ledger.countDocuments({ userId: mine })).toBe(0);
     expect(await own.decisions.countDocuments({ userId: mine })).toBe(0);
     expect(await own.notifications.countDocuments({ userId: mine })).toBe(0);
+    expect(await own.practiceAnswers.countDocuments({ userId: mine })).toBe(0);
     expect(await own.chainHeads.findOne({ _id: mine })).toBeNull();
     expect(
       await harness.db.collection("user").findOne({ _id: new ObjectId(mine) }),
@@ -136,6 +154,7 @@ describe("deleteAccount", () => {
     expect(second).toStrictEqual({
       ledgerEntries: 0,
       decisions: 0,
+      practiceAnswers: 0,
       notifications: 0,
       sessions: 0,
       linkedAccounts: 0,

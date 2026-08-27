@@ -15,6 +15,7 @@ export const COLLECTIONS = {
   chainHeads: "chain_heads",
   decisions: "decisions",
   notifications: "notifications",
+  practiceAnswers: "practice_answers",
 } as const;
 
 /**
@@ -53,11 +54,35 @@ export type NotificationDoc = {
   sentAt: Date;
 };
 
+/**
+ * One answered practice question.
+ *
+ * Kept out of the ledger on purpose. The ledger is the record of what its owner
+ * asserted about their own life, sealed so it cannot be revised; a guess about
+ * which country is larger is training, not testimony, and putting it in there
+ * would dilute the one thing that record means.
+ *
+ * `_id` is `${userId}:${questionId}` so a pair can only be answered once per
+ * account — a second attempt at a question you have already seen is not
+ * evidence about your calibration, it is evidence about your memory.
+ */
+export type PracticeAnswerDoc = {
+  _id: string;
+  userId: string;
+  questionId: string;
+  kind: string;
+  /** Whole percent, 50-99. */
+  confidence: number;
+  correct: boolean;
+  answeredAt: Date;
+};
+
 export type Collections = {
   ledger: Collection<LedgerDoc>;
   chainHeads: Collection<ChainHeadDoc>;
   decisions: Collection<DecisionDoc>;
   notifications: Collection<NotificationDoc>;
+  practiceAnswers: Collection<PracticeAnswerDoc>;
 };
 
 export function collections(db: Db): Collections {
@@ -66,6 +91,7 @@ export function collections(db: Db): Collections {
     chainHeads: db.collection<ChainHeadDoc>(COLLECTIONS.chainHeads),
     decisions: db.collection<DecisionDoc>(COLLECTIONS.decisions),
     notifications: db.collection<NotificationDoc>(COLLECTIONS.notifications),
+    practiceAnswers: db.collection<PracticeAnswerDoc>(COLLECTIONS.practiceAnswers),
   };
 }
 
@@ -77,6 +103,11 @@ export function toDecisionView(doc: DecisionDoc): DecisionView {
 export function toDecisionDoc(view: DecisionView): DecisionDoc {
   const { decisionId, ...rest } = view;
   return { _id: decisionId, ...rest };
+}
+
+/** The composite key that makes one question answerable once per account. */
+export function practiceAnswerId(userId: string, questionId: string): string {
+  return `${userId}:${questionId}`;
 }
 
 /** The composite key that makes a notification send idempotent. */

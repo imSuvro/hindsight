@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SMTP2GO as an alternate email transport alongside Brevo (`EMAIL_MODE=smtp2go`,
+  `SMTP2GO_API_KEY`), so a Brevo outage or signup issue doesn't block getting
+  review notifications working. Same interface, same free-without-a-domain
+  constraint. See [ADR-0005](docs/adr/0005-email-provider.md).
+
 ## [0.1.0] — 2026-08-21
 
 First release. The core loop works end to end, the record is tamper-evident, and

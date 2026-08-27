@@ -128,7 +128,13 @@ test.describe("accessibility", () => {
 
   test("the signed-in pages have no WCAG A or AA violations", async ({ page }) => {
     await signUp(page);
-    for (const path of ["/dashboard", "/decisions/new", "/review", "/settings"]) {
+    for (const path of [
+      "/dashboard",
+      "/decisions/new",
+      "/review",
+      "/settings",
+      "/practice",
+    ]) {
       await page.goto(path);
       await expectNoAccessibilityViolations(page);
     }

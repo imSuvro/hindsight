@@ -1,0 +1,212 @@
+.run {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+}
+
+.progress {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.progressCount {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-md);
+  color: var(--ink);
+}
+
+.progressLabel {
+  font-size: var(--text-sm);
+  color: var(--ink-faint);
+}
+
+.fieldset {
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.prompt {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 460;
+  letter-spacing: -0.015em;
+  padding: 0;
+  margin-bottom: var(--space-4);
+}
+
+/* ------------------------------------------------------------- the two options */
+
+.options {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+@media (min-width: 34rem) {
+  .options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+  text-align: left;
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-lg);
+  transition:
+    border-color var(--duration-fast) var(--ease),
+    background-color var(--duration-fast) var(--ease);
+}
+
+.option:hover:not(:disabled) {
+  border-color: var(--ink-soft);
+  background: var(--surface-hover);
+}
+
+.optionChosen {
+  border-color: var(--belief);
+  background: var(--belief-wash);
+}
+
+/*
+ * The right answer, once it is safe to show. Marked with a rule as well as a
+ * colour: the whole product refuses to let colour carry meaning alone, and a
+ * result screen is a poor place to start.
+ */
+.optionAnswer {
+  border-color: var(--reality);
+  border-left-width: 4px;
+}
+
+.optionLabel {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 500;
+}
+
+.optionDetail {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------------ confidence */
+
+.confidence {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  background: var(--surface-sunk);
+  border-radius: var(--radius-lg);
+}
+
+.confidenceLabel {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.confidenceRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.slider {
+  flex: 1;
+  accent-color: var(--belief);
+  min-width: 0;
+}
+
+.confidenceValue {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-xl);
+  color: var(--belief-ink);
+  /* Fixed width: a number that reflows as it changes reads as a glitch. */
+  min-width: 3.5ch;
+  text-align: right;
+}
+
+.confidenceHint {
+  font-size: var(--text-sm);
+  color: var(--ink-faint);
+  min-height: 1.5em;
+}
+
+/* --------------------------------------------------------------------- verdict */
+
+.verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+}
+
+.verdictRight,
+.verdictWrong {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+}
+
+.verdictRight {
+  color: var(--reality-ink);
+}
+
+.verdictWrong {
+  color: var(--belief-ink);
+}
+
+.blocked {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--ink-faint);
+}
+
+.error {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--danger);
+}
+
+/* ------------------------------------------------------------------ completion */
+
+.done {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  width: 100%;
+}
+
+.doneTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 460;
+}
+
+.doneBody {
+  max-width: var(--measure);
+  color: var(--ink-soft);
+  line-height: var(--leading-relaxed);
+}

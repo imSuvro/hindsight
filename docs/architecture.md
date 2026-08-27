@@ -20,6 +20,7 @@ Browser ──▶ Vercel (Next.js 16, Node runtime)
                 │     chain_heads   one per user, CAS target
                 │     decisions     projection, derived        ← what the UI reads
                 │     notifications send-once claims
+                │     practice_answers  the trainer, scored apart
                 │     user/session/account/verification  (Better Auth)
                 │
                 └─▶ Brevo  (review emails)

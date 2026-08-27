@@ -14,9 +14,9 @@
   text-decoration: none;
   white-space: nowrap;
   transition:
-    background-color 140ms ease,
-    border-color 140ms ease,
-    color 140ms ease;
+    background-color var(--duration-fast) var(--ease),
+    border-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
 }
 
 .button:disabled {
@@ -56,6 +56,48 @@
 .quiet:hover:not(:disabled) {
   color: var(--ink);
   background: var(--surface-hover);
+}
+
+.danger {
+  composes: button;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.danger:hover:not(:disabled) {
+  background: var(--danger);
+  color: var(--ink-inverse);
+}
+
+/*
+ * Loading keeps the label and the width. A button that swaps its text for a
+ * spinner reflows the row it sits in at the exact moment the user is watching
+ * it, which reads as a glitch rather than as progress.
+ */
+.button[data-loading="true"] {
+  cursor: progress;
+}
+
+.spinner {
+  width: 0.85em;
+  height: 0.85em;
+  flex: none;
+  border: 1.5px solid currentcolor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: buttonSpin 620ms linear infinite;
+}
+
+@keyframes buttonSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.4s;
+  }
 }
 
 .destructive {
@@ -293,7 +335,7 @@
 }
 
 .outcomeChoice:has(input:focus-visible) {
-  outline: 2px solid var(--reality-bright);
+  outline: 2px solid var(--reality);
   outline-offset: 2px;
 }
 

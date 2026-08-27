@@ -108,7 +108,7 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  border: 1.5px solid var(--reference);
+  border: 1.5px solid var(--horizon);
 }
 
 .outcomeHappened {
@@ -122,8 +122,8 @@
 }
 
 .outcomeUnresolvable {
-  background: var(--reference);
-  border-color: var(--reference);
+  background: var(--horizon);
+  border-color: var(--horizon);
   border-radius: 1px;
 }
 

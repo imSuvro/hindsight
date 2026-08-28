@@ -61,6 +61,12 @@ export type ReliabilityDiagramProps = {
    * table are omitted because both would describe marks that are not there.
    */
   variant?: "full" | "frame";
+  /**
+   * What one datum is called. The journal plots resolved decisions; the
+   * calibration trainer plots answers, and calling them decisions on a page
+   * that promises the two are kept apart would undo the promise in the caption.
+   */
+  noun?: string;
 };
 
 const x = (value: number) => PAD_LEFT + value * PLOT;
@@ -81,14 +87,14 @@ function radiusOf(count: number, largest: number): number {
   return MIN_RADIUS + (MAX_RADIUS - MIN_RADIUS) * scale;
 }
 
-function describe(bin: CalibrationBin): string {
+function describe(bin: CalibrationBin, noun: string): string {
   const range =
     bin.lowerConfidence === bin.upperConfidence
       ? `${bin.lowerConfidence}%`
       : `${bin.lowerConfidence}% to ${bin.upperConfidence}%`;
   return (
     `When you said ${range}, it happened ${percent(bin.observedFrequency)} of the time. ` +
-    `${bin.occurred} of ${bin.count} decisions. ` +
+    `${bin.occurred} of ${bin.count} ${noun}. ` +
     `Plausible range ${percent(bin.interval.lower)} to ${percent(bin.interval.upper)}.`
   );
 }
@@ -98,6 +104,7 @@ export function ReliabilityDiagram({
   insight,
   scoredCount,
   variant = "full",
+  noun = "resolved decisions",
 }: ReliabilityDiagramProps) {
   const isFrame = variant === "frame";
   const largest = bins.reduce((max, bin) => Math.max(max, bin.count), 0);
@@ -113,7 +120,7 @@ export function ReliabilityDiagram({
           aria-label={
             isFrame
               ? "An empty reliability diagram. What you said runs along the bottom, what happened runs up the side, and the dashed diagonal marks perfect calibration. Nothing is plotted yet."
-              : `Reliability diagram of ${scoredCount} resolved decisions, grouped into ${bins.length} confidence bands. The numbers behind it are in the table below.`
+              : `Reliability diagram of ${scoredCount} ${noun}, grouped into ${bins.length} confidence bands. The numbers behind it are in the table below.`
           }
         >
           {ticks.map((tick) => (
@@ -209,7 +216,7 @@ export function ReliabilityDiagram({
                 className={styles.mark}
                 tabIndex={0}
                 role="img"
-                aria-label={describe(bin)}
+                aria-label={describe(bin, noun)}
               >
                 {/*
                   A transparent target covering the point and its whole
@@ -343,8 +350,8 @@ export function ReliabilityDiagram({
           <span className={styles.annotationStrong}>
             No band is meaningfully off the line.
           </span>{" "}
-          Across {scoredCount} resolved decisions, your stated confidence has tracked what
-          actually happened.
+          Across {scoredCount} {noun}, your stated confidence has tracked what actually
+          happened.
         </p>
       )}
 

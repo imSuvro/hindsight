@@ -135,16 +135,20 @@ export default async function PracticePage() {
                     <>
                       {" "}
                       That is{" "}
-                      {report.edgeOverGuessing <= 0
-                        ? "no better than answering 50 to everything"
-                        : `${Math.round(report.edgeOverGuessing * 100)}% of the way from a shrug to perfect`}
+                      {report.edgeOverGuessing < 0
+                        ? "worse than answering 50 to everything would have been — the confidence is pointing the wrong way"
+                        : report.edgeOverGuessing === 0
+                          ? "exactly what answering 50 to everything would have scored"
+                          : `${Math.round(report.edgeOverGuessing * 100)}% of the way from a shrug to perfect`}
                       .
                     </>
                   )}
                 </p>
                 <ReliabilityDiagram
                   bins={report.bins}
+                  insight={report.insight}
                   scoredCount={report.counts.answered}
+                  noun="answers"
                 />
               </div>
             </Card>

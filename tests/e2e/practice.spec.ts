@@ -128,3 +128,71 @@ test.describe("the calibration trainer", () => {
     await expect(page.getByText(/World Bank/)).toBeVisible();
   });
 });
+
+test.describe("a whole sitting", () => {
+  /*
+   * The gap that let a broken feature ship.
+   *
+   * Every earlier spec answered exactly one question, so none of them noticed
+   * that the second arrived already locked: `useActionState` keeps its result
+   * until the component unmounts, and the run read that stale result to decide
+   * whether the *current* question had been answered. One answer per page load
+   * reached the database, which makes the trainer's whole premise — a real
+   * reading inside one sitting — unreachable.
+   *
+   * A suite that only ever exercises the first step of a loop is not testing
+   * the loop.
+   */
+  test("lets you answer question after question, not just the first", async ({
+    page,
+  }) => {
+    await signUp(page);
+    await page.goto("/practice");
+
+    for (let n = 1; n <= 4; n += 1) {
+      await expect(page.getByText(`${n}/20`)).toBeVisible();
+
+      // The controls must be live on every question, not only the first.
+      const options = page.locator("[aria-pressed]");
+      await expect(options.first()).toBeEnabled();
+      await expect(page.getByLabel("How sure are you?")).toBeEnabled();
+
+      await answerOne(page, 60 + n);
+      await page.getByRole("button", { name: /Next question|See the reading/ }).click();
+    }
+
+    await expect(page.getByText("5/20")).toBeVisible();
+  });
+
+  test("counts only what was actually stored", async ({ page }) => {
+    await signUp(page);
+    await page.goto("/practice");
+
+    for (let n = 1; n <= 3; n += 1) {
+      await answerOne(page, 70);
+      await page.getByRole("button", { name: /Next question|See the reading/ }).click();
+    }
+
+    // The running tally on screen and the persisted count in the rail are the
+    // same number. They diverged when the tally counted submissions instead of
+    // stored answers.
+    await expect(page.getByText(/of 3 right so far/)).toBeVisible();
+    await page.reload();
+    await expect(page.getByText("Answered")).toBeVisible();
+    await expect(page.locator("body")).toContainText("3");
+  });
+
+  test("a fresh question is never pre-filled with the last one's confidence", async ({
+    page,
+  }) => {
+    await signUp(page);
+    await page.goto("/practice");
+
+    await answerOne(page, 93);
+    await page.getByRole("button", { name: /Next question/ }).click();
+
+    // Carrying 93 over would put a number in the reader's mouth, which is the
+    // one thing the exercise is trying to find out.
+    await expect(page.getByLabel("How sure are you?")).toHaveValue("50");
+  });
+});

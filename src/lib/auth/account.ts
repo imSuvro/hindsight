@@ -22,6 +22,7 @@ export type DeletionReceipt = {
   ledgerEntries: number;
   decisions: number;
   notifications: number;
+  practiceAnswers: number;
   sessions: number;
   linkedAccounts: number;
 };
@@ -50,6 +51,7 @@ export async function deleteAccount(
   });
   await db.collection("verification").deleteMany({ identifier: userId });
 
+  const practiceAnswers = await own.practiceAnswers.deleteMany({ userId });
   const notifications = await own.notifications.deleteMany({ userId });
   const decisions = await own.decisions.deleteMany({ userId });
   const ledgerEntries = await own.ledger.deleteMany({ userId });
@@ -61,6 +63,7 @@ export async function deleteAccount(
     ledgerEntries: ledgerEntries.deletedCount,
     decisions: decisions.deletedCount,
     notifications: notifications.deletedCount,
+    practiceAnswers: practiceAnswers.deletedCount,
     sessions: sessions.deletedCount,
     linkedAccounts: linkedAccounts.deletedCount,
   };

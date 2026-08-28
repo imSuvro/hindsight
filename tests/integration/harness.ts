@@ -36,5 +36,6 @@ export async function clearJournal(ctx: DbContext): Promise<void> {
     ctx.db.collection("chain_heads").deleteMany({}),
     ctx.db.collection("decisions").deleteMany({}),
     ctx.db.collection("notifications").deleteMany({}),
+    ctx.db.collection("practice_answers").deleteMany({}),
   ]);
 }

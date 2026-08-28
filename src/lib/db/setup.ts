@@ -75,6 +75,31 @@ export async function setupDatabase(db: Db): Promise<void> {
     },
   });
 
+  await ensureCollection(db, COLLECTIONS.practiceAnswers, {
+    bsonType: "object",
+    required: [
+      "_id",
+      "userId",
+      "questionId",
+      "kind",
+      "confidence",
+      "correct",
+      "answeredAt",
+    ],
+    additionalProperties: true,
+    properties: {
+      _id: { bsonType: "string" },
+      userId: { bsonType: "string", minLength: 1 },
+      questionId: { bsonType: "string", minLength: 1 },
+      kind: { bsonType: "string", minLength: 1 },
+      // The floor is 50, not 1: below it you would have picked the other
+      // option, so it is not a coherent thing to say about a two-way question.
+      confidence: { bsonType: "int", minimum: 50, maximum: 99 },
+      correct: { bsonType: "bool" },
+      answeredAt: { bsonType: "date" },
+    },
+  });
+
   // Two entries can never occupy the same position in one chain. This is the
   // structural backstop under the compare-and-swap in `appendEvent`.
   await db
@@ -101,6 +126,12 @@ export async function setupDatabase(db: Db): Promise<void> {
   await db
     .collection(COLLECTIONS.notifications)
     .createIndex({ userId: 1, sentAt: -1 }, { name: "notifications_by_user" });
+
+  // Serves both reads the trainer makes: the whole history for scoring, and the
+  // set of already-seen questions that keeps a returning session fresh.
+  await db
+    .collection(COLLECTIONS.practiceAnswers)
+    .createIndex({ userId: 1, answeredAt: -1 }, { name: "practice_by_user" });
 }
 
 /**

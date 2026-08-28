@@ -165,6 +165,34 @@ These constants live in `src/lib/domain/calibration.ts` and are read by the
 interface, the methodology page and the tests, so the documentation cannot drift
 from the behaviour.
 
+### The trainer keeps the same rule, on its own count
+
+The calibration trainer at `/practice` asks questions that already have an
+answer, so a new journal is not silent for the months it takes ten decisions to
+come back. It is scored by the same arithmetic and holds to the same refusal:
+
+| Shown                                      | Requires    |
+| ------------------------------------------ | ----------- |
+| Hit rate, mean confidence, tendency, curve | 20 answered |
+| Murphy decomposition, skill score          | 40 answered |
+
+Its thresholds are **higher** than the journal's, and are its own constant in
+`src/lib/domain/practice.ts` rather than a borrowed one. The reason the journal
+shows nothing at nine is sampling noise, and noise does not care that practice
+answers are cheap to produce — twenty coin-flips are twenty coin-flips whether
+they took a year or ten minutes. The cheapness is what makes the higher bar
+affordable, not what makes it unnecessary.
+
+**Practice is never mixed into the journal's figures**, and never enters the
+ledger. Knowing which of two countries is larger is not knowing how your own
+decisions turn out; merging them would let the easy number flatter the hard one.
+
+Because a two-alternative question has a confidence floor of 50 — below it you
+would simply have picked the other option — the trainer has a fixed reference
+the journal does not: answering 50 to everything scores exactly 0.25 whatever
+happens. The trainer reports the distance from that, which is defined from the
+first session, where the skill score is not.
+
 ---
 
 ## Domains

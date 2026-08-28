@@ -53,6 +53,7 @@ const SIGNED_IN_ROUTES: Route[] = [
   { path: "/decisions", expect: /journal/i },
   { path: "/decisions/new", expect: /What are you deciding/i },
   { path: "/review", expect: /review/i },
+  { path: "/practice", expect: /How sure are you/i },
   { path: "/settings", expect: /Settings|Time zone|Your account/i },
 ];
 
@@ -89,9 +90,16 @@ test.describe("layout integrity", () => {
    * viewport is invisible on desktop and ruins every screen on a phone, which
    * is where reviews actually get read.
    */
-  for (const path of ["/", "/demo", "/dashboard", "/review", "/decisions/new"]) {
+  for (const path of [
+    "/",
+    "/demo",
+    "/dashboard",
+    "/review",
+    "/decisions/new",
+    "/practice",
+  ]) {
     test(`${path} does not scroll sideways`, async ({ page }) => {
-      if (path === "/dashboard" || path === "/review" || path === "/decisions/new") {
+      if (path !== "/" && path !== "/demo") {
         await signUp(page);
       }
 

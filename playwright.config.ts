@@ -18,7 +18,25 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 2 : undefined,
+  /*
+   * Bounded locally, not left to the default.
+   *
+   * The default is derived from the core count — ten workers on a twenty-core
+   * machine — and all of them hit one `next start` process fronting one
+   * in-memory replica set. That server drops connections under the load: a soak
+   * of sixteen full runs failed four times, every failure a `read ECONNRESET`
+   * on a different test and a different endpoint, never the same one twice.
+   * Fourteen runs at four workers failed none.
+   *
+   * It costs nothing. A run takes ~47s at four workers and ~46s at ten, because
+   * the bottleneck was never the browsers — it was the server they were all
+   * queuing behind.
+   *
+   * This mattered more than a slow suite: a rare infrastructure flake is
+   * indistinguishable from a real failure, and CI's single retry would have
+   * hidden it either way.
+   */
+  workers: process.env.CI ? 2 : 4,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   timeout: 45_000,
   expect: { timeout: 10_000 },

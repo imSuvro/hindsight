@@ -1,4 +1,5 @@
 import { type CalibrationBin, binForecasts } from "./binning";
+import type { CalibrationInsight } from "./calibration";
 import {
   type MurphyDecomposition,
   type ResolvedForecast,
@@ -152,6 +153,15 @@ export type PracticeReport = {
    */
   readonly edgeOverGuessing: number | null;
   readonly bins: readonly CalibrationBin[];
+  /**
+   * The band furthest off the diagonal, or null when none is meaningfully off.
+   *
+   * Present because the diagram's caption is written from it, and an absent
+   * `insight` makes that caption claim nothing is off the line — which is a
+   * statement about the data, not a default. It was absent here once, and the
+   * trainer told every reader their confidence tracked reality.
+   */
+  readonly insight: CalibrationInsight | null;
   readonly decomposition: MurphyDecomposition | null;
   readonly skillScore: number | null;
   readonly remainingForHeadline: number;
@@ -160,6 +170,24 @@ export type PracticeReport = {
 
 /** Below this the gap is inside the noise and is not called a miss. */
 const MEANINGFUL_GAP = 0.05;
+
+/**
+ * The band furthest off the diagonal. Mirrors `insightOf` in `calibration.ts`,
+ * which is private there — ten lines duplicated in preference to widening that
+ * module's surface, because its small-sample gating is the product rather than
+ * an implementation detail to be shared around.
+ */
+function worstBand(bins: readonly CalibrationBin[]): CalibrationInsight | null {
+  let worst: CalibrationInsight | null = null;
+  for (const bin of bins) {
+    const gap = bin.meanForecast - bin.observedFrequency;
+    if (Math.abs(gap) < MEANINGFUL_GAP) continue;
+    if (!worst || Math.abs(gap) > Math.abs(worst.gap)) {
+      worst = { bin, gap, direction: gap > 0 ? "overconfident" : "underconfident" };
+    }
+  }
+  return worst;
+}
 
 /* ------------------------------------------------------------------ scoring */
 
@@ -214,6 +242,8 @@ export function buildPracticeReport(answers: readonly PracticeAnswer[]): Practic
   const gap =
     meanConfidence !== null && hitRate !== null ? meanConfidence - hitRate : null;
 
+  const bins = hasHeadline ? binForecasts(forecasts) : [];
+
   return {
     thresholds: PRACTICE_THRESHOLDS,
     counts: { answered, correct },
@@ -230,7 +260,8 @@ export function buildPracticeReport(answers: readonly PracticeAnswer[]): Practic
             ? "overconfident"
             : "underconfident",
     edgeOverGuessing: brier === null ? null : 1 - brier / GUESSING_BRIER,
-    bins: hasHeadline ? binForecasts(forecasts) : [],
+    bins,
+    insight: worstBand(bins),
     decomposition: hasDecomposition ? murphyDecomposition(forecasts) : null,
     // Null when every answer went the same way, which a strong start makes
     // likely. The caller renders that as "not yet", never as zero.
@@ -527,7 +558,11 @@ export function resolveQuestion(
   if (!Number.isFinite(ratio) || ratio < MIN_RATIO) return null;
 
   return {
-    id,
+    // The canonical form, not what was posted. `population:B:A` and
+    // `population:A:B` name one pair, and returning the id verbatim let the
+    // second spelling be stored under its own `_id` — so the same pair could be
+    // answered twice and scored twice.
+    id: questionId(pool.kind, firstId, secondId),
     kind: pool.kind,
     difficulty: difficultyOf(ratio),
     options: [first, second],

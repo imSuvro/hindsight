@@ -18,7 +18,13 @@ import { type NextRequest, NextResponse } from "next/server";
  * page.
  */
 
-const SIGNED_IN_ONLY = ["/dashboard", "/decisions", "/review", "/settings"];
+/**
+ * Every route that needs an account. A route missing from here still refuses a
+ * signed-out visitor — the page checks its own session — but the bounce loses
+ * the destination, so the reader signs in and lands somewhere generic instead
+ * of where they were going. `/practice` was missing and did exactly that.
+ */
+const SIGNED_IN_ONLY = ["/dashboard", "/decisions", "/review", "/settings", "/practice"];
 
 /** Avatars come straight from the identity provider; nothing else is remote. */
 const AVATAR_HOSTS = [

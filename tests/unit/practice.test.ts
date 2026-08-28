@@ -188,6 +188,46 @@ describe("buildPracticeReport", () => {
   });
 });
 
+describe("the diagram's caption", () => {
+  /*
+   * The report has to carry `insight`, because the chart writes its caption
+   * from it and an absent one is not neutral: the chart falls through to "no
+   * band is meaningfully off the line", which is a claim about the data. The
+   * practice page shipped without it, so the trainer told every reader their
+   * confidence had tracked reality — directly under a headline saying it ran
+   * twenty points hot.
+   */
+  it("names the band furthest off the line when one is really off", () => {
+    const given = [
+      ...answers(20, 90, true).slice(0, 10),
+      ...answers(10, 90, false),
+      ...answers(12, 60, true),
+      ...answers(8, 60, false),
+    ];
+    const report = buildPracticeReport(given);
+    expect(report.insight).not.toBeNull();
+    // The 90 band came off half the time; the 60 band is on the line.
+    expect(report.insight?.bin.lowerConfidence).toBe(90);
+    expect(report.insight?.direction).toBe("overconfident");
+    expect(Math.abs(report.insight?.gap ?? 0)).toBeGreaterThan(0.05);
+  });
+
+  it("reports no insight only when nothing is meaningfully off", () => {
+    // Said 80, right 80% of the time: on the line.
+    const report = buildPracticeReport([
+      ...answers(32, 80, true),
+      ...answers(8, 80, false),
+    ]);
+    expect(report.insight).toBeNull();
+  });
+
+  it("has no insight below the threshold, because it has no bins", () => {
+    const report = buildPracticeReport(answers(5, 90, false));
+    expect(report.bins).toEqual([]);
+    expect(report.insight).toBeNull();
+  });
+});
+
 describe("buildSession", () => {
   it("delivers exactly the number of questions it promised", () => {
     fc.assert(
@@ -409,6 +449,21 @@ describe("resolveQuestion", () => {
     // answer must not be scoreable.
     expect(resolveQuestion([tied], questionId("area", "aruba", "marshall"))).toBeNull();
     expect(resolveQuestion([tied], questionId("area", "aruba", "big"))).not.toBeNull();
+  });
+
+  it("returns the canonical id, so one pair cannot be stored twice", () => {
+    /*
+     * The id is the storage key. Returning whatever spelling was posted let
+     * `population:B:A` and `population:A:B` become two rows for one pair, so a
+     * question could be answered and scored twice.
+     */
+    const canonical = questionId("population", "population3", "population9");
+    const reversed = "population:population9:population3";
+    expect(reversed).not.toBe(canonical);
+
+    const key = resolveQuestion(POOLS, reversed);
+    expect(key).not.toBeNull();
+    expect(key?.id).toBe(canonical);
   });
 
   it("gives the same answer whichever way the pair is named", () => {

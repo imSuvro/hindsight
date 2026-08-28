@@ -27,6 +27,14 @@ import { practiceAnswerSchema } from "@/lib/schemas/api";
 export type PracticeResult = {
   readonly ok: boolean;
   readonly correct?: boolean;
+  /**
+   * Whether this answer was actually stored. False when the account had
+   * already answered this pair, which the database refuses.
+   *
+   * The client counts its running tally from this rather than from what it
+   * submitted, so the figure on screen cannot drift from the reading below it.
+   */
+  readonly recorded?: boolean;
   readonly answerId?: string;
   /** Both figures, so the reader can see what the answer rested on. */
   readonly detail?: Readonly<Record<string, string>>;
@@ -62,8 +70,9 @@ export async function answerPracticeQuestion(
 
   // A repeat returns false rather than throwing. The reader still sees the
   // outcome — refusing to say whether they were right would be worse than
-  // declining to score it twice.
-  await recordPracticeAnswer(dbContext(), {
+  // declining to score it twice — but the caller is told, so its tally counts
+  // what was stored rather than what was sent.
+  const recorded = await recordPracticeAnswer(dbContext(), {
     userId: session.user.id,
     questionId: question.id,
     kind: question.kind,
@@ -84,6 +93,7 @@ export async function answerPracticeQuestion(
   return {
     ok: true,
     correct,
+    recorded,
     answerId: question.answerId,
     detail: Object.fromEntries(
       question.options.map((option) => [option.id, option.detail ?? ""]),

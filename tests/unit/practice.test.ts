@@ -40,6 +40,16 @@ const pool = (kind: string, count = 60, ratio = 1.18): PracticePool => ({
 
 const POOLS = [pool("population"), pool("area", 60, 1.25)];
 
+/**
+ * The figures for a question. Only reachable by resolving it server-side, which
+ * is the enforcement being tested rather than an inconvenience around it.
+ */
+const valuesOf = (id: string): [number, number] => {
+  const key = resolveQuestion(POOLS, id);
+  if (!key) throw new Error(`unresolvable: ${id}`);
+  return [key.options[0].value, key.options[1].value];
+};
+
 describe("buildPracticeReport", () => {
   it("says nothing at all before the headline threshold", () => {
     fc.assert(
@@ -222,7 +232,20 @@ describe("buildSession", () => {
         "kind",
         "options",
       ]);
-      expect(JSON.stringify(question)).not.toContain("answerId");
+
+      /*
+       * The figures matter more than the field name. Serialising `value` or
+       * `detail` alongside the labels would hand over the answer without
+       * anything called "answerId" appearing anywhere — which is exactly the
+       * leak that shipped and had to be caught by reading the served bytes.
+       */
+      for (const option of question.options) {
+        expect(Object.keys(option).sort()).toEqual(["id", "label"]);
+      }
+      const serialised = JSON.stringify(question);
+      expect(serialised).not.toContain("answerId");
+      expect(serialised).not.toContain("value");
+      expect(serialised).not.toContain("detail");
     }
   });
 
@@ -230,8 +253,8 @@ describe("buildSession", () => {
     fc.assert(
       fc.property(fc.string({ minLength: 1, maxLength: 12 }), (seed) => {
         for (const question of buildSession(POOLS, { seed })) {
-          const [a, b] = question.options;
-          const ratio = Math.max(a.value, b.value) / Math.min(a.value, b.value);
+          const [a, b] = valuesOf(question.id);
+          const ratio = Math.max(a, b) / Math.min(a, b);
           const band = DIFFICULTY_BANDS[question.difficulty];
           expect(ratio).toBeGreaterThanOrEqual(band.min);
           expect(ratio).toBeLessThan(band.max);
@@ -249,8 +272,8 @@ describe("buildSession", () => {
     fc.assert(
       fc.property(fc.string({ minLength: 1, maxLength: 12 }), (seed) => {
         for (const question of buildSession(POOLS, { seed })) {
-          const [a, b] = question.options;
-          const ratio = Math.max(a.value, b.value) / Math.min(a.value, b.value);
+          const [a, b] = valuesOf(question.id);
+          const ratio = Math.max(a, b) / Math.min(a, b);
           expect(ratio).toBeGreaterThanOrEqual(MIN_RATIO);
         }
       }),
@@ -282,9 +305,10 @@ describe("buildSession", () => {
     const many = Array.from({ length: 30 }, (_, i) =>
       buildSession(POOLS, { seed: `order-${i}` }),
     ).flat();
-    const largerFirst = many.filter(
-      (q) => q.options[0].value > q.options[1].value,
-    ).length;
+    const largerFirst = many.filter((q) => {
+      const key = resolveQuestion(POOLS, q.id);
+      return key !== null && key.answerId === q.options[0].id;
+    }).length;
     const share = largerFirst / many.length;
     expect(share).toBeGreaterThan(0.35);
     expect(share).toBeLessThan(0.65);
@@ -325,8 +349,10 @@ describe("buildSession", () => {
       ],
     };
     for (const question of buildSession([dirty], { seed: "dirty" })) {
-      expect(question.options[0].value).toBeGreaterThan(0);
-      expect(question.options[1].value).toBeGreaterThan(0);
+      const key = resolveQuestion([dirty], question.id);
+      expect(key).not.toBeNull();
+      expect(key?.options[0].value).toBeGreaterThan(0);
+      expect(key?.options[1].value).toBeGreaterThan(0);
     }
   });
 

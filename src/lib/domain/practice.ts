@@ -33,9 +33,11 @@ import {
  * than imported — this layer may not reach for a fixture — and every answer is
  * derived from it by comparison. There is no answer key to get wrong.
  *
- * **The answer never reaches the browser.** `PracticeQuestion` has no field for
- * it; only `resolveQuestion`, which the server calls, returns one. A trainer
- * whose answers sit in the page source measures nothing.
+ * **The answer never reaches the browser** — and that means the figures, not
+ * just a field called `answerId`. A question carries two ids and two labels and
+ * nothing else, because shipping the populations alongside them would let
+ * anyone read the answer out of the page source and would not even look like a
+ * leak. The values come back with the result, once the answer is committed.
  *
  * **Confidence runs 50–99, and is never rescaled.** Below 50 you would simply
  * have picked the other option, so it is not a coherent thing to say. That
@@ -97,18 +99,34 @@ export type PracticePool = {
 };
 
 /**
- * What the page may render. It carries no answer, by type, so the answer cannot
- * be leaked into the markup by an accidental prop spread.
+ * An option as the page sees it: something to name and something to click, and
+ * deliberately not the figure it is named for.
+ */
+export type PracticeOption = {
+  readonly id: string;
+  readonly label: string;
+};
+
+/**
+ * What the page may render.
+ *
+ * The type is the enforcement. Everything that would give the answer away —
+ * `value`, `detail`, and `answerId` itself — is absent, so no prop spread or
+ * careless edit can serialise it into the payload Next sends to the browser.
  */
 export type PracticeQuestion = {
   readonly id: string;
   readonly kind: string;
   readonly difficulty: PracticeDifficulty;
-  readonly options: readonly [PracticeSubject, PracticeSubject];
+  readonly options: readonly [PracticeOption, PracticeOption];
 };
 
-/** What the server gets. Only `resolveQuestion` produces one. */
-export type PracticeQuestionKey = PracticeQuestion & {
+/** What the server gets, figures and all. Only `resolveQuestion` produces one. */
+export type PracticeQuestionKey = {
+  readonly id: string;
+  readonly kind: string;
+  readonly difficulty: PracticeDifficulty;
+  readonly options: readonly [PracticeSubject, PracticeSubject];
   readonly answerId: string;
 };
 
@@ -427,13 +445,22 @@ export function buildSession(
       if (!allowExcluded && exclude?.has(id)) continue;
 
       // Which option is shown first must not encode the answer.
-      const options: readonly [PracticeSubject, PracticeSubject] =
-        random() < 0.5 ? [partner, anchor] : [anchor, partner];
+      const shown = random() < 0.5 ? [partner, anchor] : [anchor, partner];
 
       usedQuestions.add(id);
       usedSubjects.add(anchor.id);
       usedSubjects.add(partner.id);
-      return { id, kind: pool.kind, difficulty, options };
+      return {
+        id,
+        kind: pool.kind,
+        difficulty,
+        // Stripped to id and label. Carrying the values here would put both
+        // figures in the page source and hand over the answer.
+        options: [
+          { id: shown[0].id, label: shown[0].label },
+          { id: shown[1].id, label: shown[1].label },
+        ],
+      };
     }
     return null;
   };

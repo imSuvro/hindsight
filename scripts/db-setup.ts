@@ -35,7 +35,13 @@ async function main(): Promise<void> {
     console.log(`Applying indexes and validators to "${db.databaseName}"…`);
     await setupDatabase(db);
 
-    for (const name of ["ledger", "chain_heads", "decisions", "notifications"]) {
+    for (const name of [
+      "ledger",
+      "chain_heads",
+      "decisions",
+      "notifications",
+      "practice_answers",
+    ]) {
       const indexes = await db.collection(name).indexes();
       console.log(`  ${name}: ${indexes.map((index) => index.name).join(", ")}`);
     }

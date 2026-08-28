@@ -1,5 +1,6 @@
 import fc from "fast-check";
 import { sealEntry, genesisPrevHash } from "@/lib/domain/chain";
+import type { PracticeAnswer } from "@/lib/domain/practice";
 import type { ResolvedForecast } from "@/lib/domain/scoring";
 import {
   DOMAINS,
@@ -31,6 +32,29 @@ export const clusteredForecastsArb = (minLength = 1, maxLength = 200) =>
       occurred: fc.boolean(),
     }),
     { minLength, maxLength },
+  );
+
+/**
+ * A two-alternative answer. Confidence starts at 50 because below it you would
+ * simply have picked the other option, so it is not a coherent thing to say.
+ */
+export const practiceAnswerArb: fc.Arbitrary<PracticeAnswer> = fc.record({
+  confidence: fc.integer({ min: 50, max: 99 }),
+  correct: fc.boolean(),
+});
+
+export const practiceAnswersArb = (minLength = 0, maxLength = 200) =>
+  fc.array(practiceAnswerArb, { minLength, maxLength });
+
+/** Comparison items with strictly positive values, as a real dataset has. */
+export const comparisonItemsArb = (minLength = 2, maxLength = 60) =>
+  fc.uniqueArray(
+    fc.record({
+      id: fc.string({ minLength: 1, maxLength: 8 }),
+      label: fc.string({ minLength: 1, maxLength: 12 }),
+      value: fc.integer({ min: 1, max: 2_000_000_000 }),
+    }),
+    { minLength, maxLength, selector: (item) => item.id },
   );
 
 // ---------------------------------------------------------------------------

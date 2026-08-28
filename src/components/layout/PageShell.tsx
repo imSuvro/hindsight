@@ -18,6 +18,7 @@ export const SIGNED_IN_NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/review", label: "Review" },
   { href: "/decisions", label: "Journal" },
+  { href: "/practice", label: "Practice" },
   { href: "/settings", label: "Settings" },
 ];
 

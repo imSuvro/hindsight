@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PRACTICE_CONFIDENCE_MAX, PRACTICE_CONFIDENCE_MIN } from "@/lib/domain/practice";
 import {
   confidenceSchema,
   decisionIdSchema,
@@ -108,3 +109,22 @@ export function fieldErrors(error: z.ZodError): FieldErrors {
   }
   return errors;
 }
+
+/**
+ * One answered practice question.
+ *
+ * The client sends only the question id, which option it picked and how sure it
+ * was — never which answer was right. The server recomputes that from the id
+ * against the bundled dataset, so a forged or edited payload cannot score.
+ */
+export const practiceAnswerSchema = z.object({
+  questionId: z.string().min(1).max(128),
+  chosenId: z.string().min(1).max(32),
+  confidence: z.coerce
+    .number()
+    .int()
+    .min(PRACTICE_CONFIDENCE_MIN)
+    .max(PRACTICE_CONFIDENCE_MAX),
+});
+
+export type PracticeAnswerInput = z.infer<typeof practiceAnswerSchema>;

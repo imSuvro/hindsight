@@ -51,7 +51,13 @@ test.describe("the public pages", () => {
   test("sends signed-out visitors to sign in, and remembers where they were going", async ({
     page,
   }) => {
-    for (const path of ["/dashboard", "/decisions", "/review", "/settings"]) {
+    for (const path of [
+      "/dashboard",
+      "/decisions",
+      "/review",
+      "/settings",
+      "/practice",
+    ]) {
       await page.goto(path);
       await expect(page).toHaveURL(`/sign-in?next=${encodeURIComponent(path)}`);
     }

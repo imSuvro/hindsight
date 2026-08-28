@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-08-28
+
+### Added
+
+- **A calibration trainer at `/practice`.** The journal says nothing until ten
+  decisions have come back and been answered, which takes months. This is the
+  other half: two-option questions that already have an answer, asked now and
+  scored now, so a real reliability diagram appears inside one sitting.
+  - Scored by the same Brier machinery as the journal, joined at the
+    dataset-agnostic seam, and kept **entirely apart** from the journal's
+    figures and out of the ledger. Knowing which country is larger is not
+    knowing how your own decisions turn out.
+  - **No fact is authored.** 215 countries pulled from
+    [World Bank Open Data](https://data.worldbank.org) by a committed script;
+    questions are computed by comparison, so there is no answer key to get
+    wrong. The page names its source.
+  - **The answer never reaches the browser** — not the id, and not the figures
+    either, which would have given it away just as completely. The browser
+    posts a question id, a choice and a confidence; the server recomputes the
+    answer.
+  - Difficulty is spread deliberately. More than half of all country pairs
+    differ by over eightfold, so uniform sampling would ask trivia, put every
+    answer at 95–99% and collapse the diagram into one corner.
+  - A correctness floor of 1.1 makes unanswerable pairs unaskable *and*
+    unscoreable — the data really contains ties, and anything a couple of
+    percent apart is inside the source's own estimation error.
+  - Its own display thresholds, higher than the journal's at 20 and 40: noise
+    does not care that practice answers are cheap to produce.
+  - Adds a reading the journal cannot offer — **edge over guessing**, against
+    the fixed 0.25 that answering 50 to everything scores, which is defined
+    from the first session where the skill score is not.
+
 ## [0.4.1] — 2026-08-28
 
 ### Fixed
@@ -176,7 +208,8 @@ timing is approximate; the hash chain detects tampering rather than preventing
 it, and cannot detect truncation of the newest entries without an external
 witness.
 
-[unreleased]: https://github.com/imSuvro/hindsight/compare/v0.4.1...HEAD
+[unreleased]: https://github.com/imSuvro/hindsight/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/imSuvro/hindsight/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/imSuvro/hindsight/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/imSuvro/hindsight/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/imSuvro/hindsight/compare/v0.2.0...v0.3.0

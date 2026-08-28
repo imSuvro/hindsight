@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] — 2026-08-28
+
+An adversarial review of v0.5.0 found seven defects in the calibration trainer.
+The first one meant the feature did not work.
+
+### Fixed
+
+- **Only the first question of a session could be answered.** The run read
+  `useActionState`'s result to decide whether the *current* question had been
+  answered, and that result survives until the component unmounts — so from
+  question two onward the controls rendered disabled, the submit button was
+  absent, and the previous verdict was still on screen. Exactly one answer per
+  page load reached the database, which made the trainer's whole premise, a
+  real reading inside one sitting, unreachable.
+- **The reliability diagram asserted "No band is meaningfully off the line" to
+  every reader.** The chart writes that caption from `insight`, the practice
+  page never passed one, and the fallback is a claim about the data rather than
+  a neutral default — printed directly beneath a headline saying the reader's
+  confidence ran twenty points hot. It was false in essentially every session,
+  including for a perfectly calibrated reader.
+- The running tally counted submissions rather than stored answers, so a
+  refused repeat or a rejected answer inflated it and the figure on screen
+  contradicted the reading below it.
+- "Another set" linked to the route it was already on, so nothing remounted and
+  the finished screen stayed up looking broken.
+- A *negative* edge over guessing was reported as "no better than answering 50
+  to everything". Worse than a shrug is not the same as equal to one, and that
+  reader is the one who most needs telling.
+- The chart called practice answers "resolved decisions" in four places — the
+  journal's ledger vocabulary, on the page whose promise is that the two are
+  kept apart. The noun is now a prop.
+- `resolveQuestion` returned whichever id spelling was posted rather than the
+  canonical one, so one pair could be stored as two rows and scored twice.
+- `/practice` was missing from the proxy's signed-in list. The page still
+  refused a signed-out visitor, but the bounce lost the destination, so a
+  shared link landed on a bare sign-in.
+
+### Testing
+
+The suite was green through all of the above because every spec answered
+exactly one question. A suite that only exercises the first step of a loop is
+not testing the loop. Adds specs that walk a whole sitting, check the tally
+against what was stored, and assert a fresh question is never pre-filled with
+the last one's confidence.
+
 ## [0.5.0] — 2026-08-28
 
 ### Added
@@ -208,7 +253,8 @@ timing is approximate; the hash chain detects tampering rather than preventing
 it, and cannot detect truncation of the newest entries without an external
 witness.
 
-[unreleased]: https://github.com/imSuvro/hindsight/compare/v0.5.0...HEAD
+[unreleased]: https://github.com/imSuvro/hindsight/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/imSuvro/hindsight/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/imSuvro/hindsight/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/imSuvro/hindsight/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/imSuvro/hindsight/compare/v0.3.0...v0.4.0
